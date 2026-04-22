@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — ระบบลงรับหนังสือราชการ สจป.4 ตาก</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --forest-dark:  #1a2e1a;
+      --forest-mid:   #2d4a2d;
+      --forest-light: #3d6b3d;
+      --forest-pale:  #e8f0e8;
+      --forest-bg:    #f2f6f2;
+      --gold:         #c9a84c;
+      --gold-light:   #e8c97a;
+      --cream:        #f5f0e8;
+      --white:        #ffffff;
+      --text-dark:    #1a2e1a;
+      --text-mid:     #3d5a3d;
+      --text-light:   #6b8f6b;
+      --border:       #c8d8c8;
+      --danger:       #dc2626;
+      --warning:      #d97706;
+      --urgent-1:     #2563eb;
+      --urgent-2:     #d97706;
+      --urgent-3:     #dc2626;
+      --secret-1:     #7c3aed;
+      --secret-2:     #9d174d;
+      --secret-3:     #1e1b4b;
+      --shadow:       rgba(26,46,26,0.12);
+      --sidebar-w:    260px;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--forest-bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: linear-gradient(180deg, var(--forest-dark) 0%, #0f1f0f 100%);
+      z-index: 100;
+      display: flex; flex-direction: column;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
+
+    .sidebar-logo {
+      font-size: 36px; margin-bottom: 8px;
+      filter: drop-shadow(0 2px 8px rgba(201,168,76,0.4));
+    }
+
+    .sidebar-title {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 12px; font-weight: 700;
+      color: var(--gold-light);
+      line-height: 1.6;
+    }
+
+    .sidebar-sub {
+      font-size: 10px; color: rgba(255,255,255,0.45);
+      margin-top: 3px;
+    }
+
+    .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+
+    .nav-label {
+      font-size: 10px; font-weight: 600;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 12px 8px 6px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.65);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+    .nav-item.active { background: rgba(201,168,76,0.2); color: var(--gold-light); }
+    .nav-item .icon { font-size: 16px; flex-shrink: 0; }
+
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .user-info {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .user-avatar {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--forest-light), var(--forest-mid));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+
+    .user-name { font-size: 13px; font-weight: 600; color: var(--white); }
+    .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+    .btn-logout {
+      width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 9px;
+      background: rgba(220,38,38,0.15);
+      border: 1px solid rgba(220,38,38,0.3);
+      border-radius: 7px;
+      color: #fca5a5;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .btn-logout:hover { background: rgba(220,38,38,0.3); color: #fff; }
+
+    /* ─── MAIN CONTENT ─── */
+    .main {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    .topbar {
+      background: var(--white);
+      border-bottom: 2px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .topbar-title {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 16px; font-weight: 700;
+      color: var(--forest-dark);
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .date-badge {
+      background: var(--forest-pale);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px; font-weight: 500;
+      color: var(--text-mid);
+    }
+
+    .content { padding: 28px 32px; flex: 1; }
+
+    /* ─── STATS CARDS ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px 22px;
+      box-shadow: 0 2px 8px var(--shadow);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      transition: transform 0.15s;
+    }
+
+    .stat-card:hover { transform: translateY(-2px); }
+
+    .stat-icon {
+      width: 48px; height: 48px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.green { background: var(--forest-pale); }
+    .stat-icon.gold  { background: #fef3c7; }
+    .stat-icon.red   { background: #fef2f2; }
+    .stat-icon.blue  { background: #eff6ff; }
+
+    .stat-num {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 28px; font-weight: 700;
+      color: var(--forest-dark);
+      line-height: 1;
+    }
+
+    .stat-label { font-size: 12px; color: var(--text-light); margin-top: 3px; }
+
+    /* ─── FORM CARD ─── */
+    .form-card {
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+
+    .form-card-header {
+      background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest-mid) 100%);
+      padding: 18px 28px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .form-card-header h2 {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 16px; font-weight: 700;
+      color: var(--white);
+    }
+
+    .form-card-header .header-icon { font-size: 20px; }
+
+    .form-body { padding: 28px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .form-grid.full  { grid-template-columns: 1fr; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.span2 { grid-column: span 2; }
+    .form-group.span3 { grid-column: span 3; }
+
+    .form-label {
+      font-size: 13px; font-weight: 600;
+      color: var(--text-mid);
+    }
+
+    .form-label .req { color: var(--danger); }
+
+    .form-input, .form-select, .form-textarea {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 14px;
+      color: var(--text-dark);
+      background: var(--white);
+      transition: all 0.18s;
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--forest-light);
+      box-shadow: 0 0 0 3px rgba(61,107,61,0.1);
+    }
+
+    .form-textarea { resize: vertical; min-height: 80px; }
+
+    /* Speed level badges */
+    .speed-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .speed-btn {
+      padding: 8px 4px;
+      border-radius: 7px;
+      border: 2px solid transparent;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 11px; font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      background: #f8fafc;
+      color: #64748b;
+    }
+
+    .speed-btn:hover { transform: translateY(-1px); }
+
+    .speed-btn.selected { border-width: 2px; }
+
+    .speed-normal   { }
+    .speed-duan     { background: #eff6ff; color: var(--urgent-1); }
+    .speed-duan-mak { background: #fff7ed; color: var(--urgent-2); }
+    .speed-duan-sud { background: #fef2f2; color: var(--urgent-3); }
+    .speed-lab      { background: #f5f3ff; color: var(--secret-1); }
+    .speed-lab-mak  { background: #fdf2f8; color: var(--secret-2); }
+    .speed-lab-sud  { background: #eef2ff; color: var(--secret-3); }
+
+    .speed-btn.selected.speed-normal   { border-color: #94a3b8; background: #f1f5f9; }
+    .speed-btn.selected.speed-duan     { border-color: var(--urgent-1); background: #dbeafe; }
+    .speed-btn.selected.speed-duan-mak { border-color: var(--urgent-2); background: #fed7aa; }
+    .speed-btn.selected.speed-duan-sud { border-color: var(--urgent-3); background: #fecaca; }
+    .speed-btn.selected.speed-lab      { border-color: var(--secret-1); background: #ede9fe; }
+    .speed-btn.selected.speed-lab-mak  { border-color: var(--secret-2); background: #fce7f3; }
+    .speed-btn.selected.speed-lab-sud  { border-color: var(--secret-3); background: #c7d2fe; color: #fff; }
+
+    /* Department combo */
+    .dept-combo { display: flex; gap: 8px; }
+    .dept-combo .form-select { flex: 1; }
+    .dept-combo .form-input  { flex: 1; display: none; }
+
+    .btn-add-custom {
+      padding: 10px 14px;
+      background: var(--forest-pale);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-mid);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .btn-add-custom:hover { background: var(--forest-mid); color: var(--white); border-color: var(--forest-mid); }
+
+    /* Section divider */
+    .section-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0 20px;
+      grid-column: 1 / -1;
+    }
+
+    .section-divider span {
+      font-size: 12px; font-weight: 700;
+      color: var(--forest-mid);
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .section-divider::before, .section-divider::after {
+      content: ''; flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Action buttons */
+    .form-actions {
+      display: flex; gap: 12px;
+      justify-content: flex-end;
+      padding: 20px 28px;
+      border-top: 1px solid var(--border);
+      background: var(--forest-bg);
+    }
+
+    .btn {
+      padding: 11px 28px;
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      border: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--forest-mid), var(--forest-dark));
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(26,46,26,0.3);
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(26,46,26,0.4); }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--text-mid);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:hover { background: var(--forest-pale); }
+
+    .btn-supabase {
+      background: linear-gradient(135deg, #1a936f, #114b5f);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(26,147,111,0.3);
+    }
+
+    .btn-supabase:hover { transform: translateY(-1px); }
+
+    /* ─── TABLE ─── */
+    .table-card {
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-header h3 {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 15px; font-weight: 700;
+      color: var(--forest-dark);
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead { background: var(--forest-pale); }
+
+    th {
+      padding: 11px 14px;
+      text-align: left;
+      font-weight: 600; font-size: 12px;
+      color: var(--text-mid);
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #f0f4f0;
+      color: var(--text-dark);
+      vertical-align: middle;
+    }
+
+    tr:hover td { background: #f8fbf8; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-normal   { background: #f1f5f9; color: #475569; }
+    .badge-duan     { background: #dbeafe; color: #1d4ed8; }
+    .badge-duan-mak { background: #fed7aa; color: #c2410c; }
+    .badge-duan-sud { background: #fecaca; color: #991b1b; }
+    .badge-lab      { background: #ede9fe; color: #5b21b6; }
+    .badge-lab-mak  { background: #fce7f3; color: #9d174d; }
+    .badge-lab-sud  { background: #c7d2fe; color: #1e1b4b; }
+
+    .doc-num {
+      font-family: monospace;
+      font-size: 12px; font-weight: 700;
+      color: var(--forest-mid);
+      background: var(--forest-pale);
+      padding: 2px 8px; border-radius: 4px;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed; bottom: 30px; right: 30px;
+      background: var(--forest-dark);
+      color: var(--white);
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      border-left: 4px solid var(--gold);
+      z-index: 9999;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .toast.show { transform: translateX(0); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 32px;
+      max-width: 420px; width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      transform: scale(0.9);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.open .modal { transform: scale(1); }
+
+    .modal-icon { font-size: 48px; margin-bottom: 16px; }
+    .modal-title { font-family: 'Noto Serif Thai', serif; font-size: 20px; font-weight: 700; color: var(--forest-dark); margin-bottom: 8px; }
+    .modal-doc-num { font-size: 28px; font-weight: 800; color: var(--gold); font-family: monospace; letter-spacing: 2px; margin: 12px 0; }
+    .modal-sub { font-size: 14px; color: var(--text-light); margin-bottom: 24px; }
+    .modal-close { padding: 10px 32px; }
+
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+      .sidebar { transform: translateX(-260px); }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid.three { grid-template-columns: 1fr 1fr; }
+      .speed-grid { grid-template-columns: repeat(4, 1fr); }
+      .form-group.span2, .form-group.span3 { grid-column: span 1; }
+      .main { margin-left: 0; }
+    }
+
+    .running-num-display {
+      background: linear-gradient(135deg, var(--forest-pale), var(--cream));
+      border: 2px dashed var(--forest-light);
+      border-radius: 10px;
+      padding: 12px 20px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .running-num-display .label { font-size: 12px; color: var(--text-light); margin-bottom: 4px; }
+    .running-num-display .num { font-size: 24px; font-weight: 800; color: var(--forest-dark); font-family: monospace; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">🌲</div>
+    <div class="sidebar-title">สำนักจัดการทรัพยากรป่าไม้ที่ 4<br>(ตาก)</div>
+    <div class="sidebar-sub">ระบบลงรับหนังสือราชการ</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">เมนูหลัก</div>
+    <a class="nav-item active" onclick="showSection('dashboard')">
+      <span class="icon">📊</span> แดชบอร์ด
+    </a>
+    <a class="nav-item" onclick="showSection('register')">
+      <span class="icon">📥</span> ลงรับหนังสือ
+    </a>
+    <a class="nav-item" onclick="showSection('list')">
+      <span class="icon">📋</span> รายการหนังสือ
+    </a>
+    <div class="nav-label">ฐานข้อมูล</div>
+    <a class="nav-item" id="supabaseLink" href="#" target="_blank">
+      <span class="icon">🗄️</span> ดูข้อมูล Supabase
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">👤</div>
+      <div>
+        <div class="user-name" id="sidebarUser">ผู้ดูแลระบบ</div>
+        <div class="user-role">เจ้าหน้าที่ระบบ</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">
+      🚪 ออกจากระบบ
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="pageTitle">แดชบอร์ด — ระบบลงรับหนังสือราชการ</div>
+    <div class="topbar-right">
+      <div class="date-badge" id="currentDate">—</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ═══════════ DASHBOARD SECTION ═══════════ -->
+    <div id="sec-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon green">📅</div>
+          <div>
+            <div class="stat-num" id="countToday">0</div>
+            <div class="stat-label">หนังสือที่ลงรับวันนี้</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold">📑</div>
+          <div>
+            <div class="stat-num" id="countTotal">0</div>
+            <div class="stat-label">หนังสือทั้งหมด (ปีนี้)</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">⚡</div>
+          <div>
+            <div class="stat-num" id="countUrgent">0</div>
+            <div class="stat-label">หนังสือด่วน/ลับ</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">🔢</div>
+          <div>
+            <div class="stat-num" id="nextRunning">—</div>
+            <div class="stat-label">เลขรับลำดับถัดไป</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent table -->
+      <div class="table-card">
+        <div class="table-header">
+          <h3>📋 รายการหนังสือล่าสุด (10 รายการ)</h3>
+          <button class="btn btn-secondary" style="font-size:13px;padding:8px 16px" onclick="refreshTable()">🔄 รีเฟรช</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>เลขรับ</th>
+                <th>วันที่ลงรับ</th>
+                <th>เลขที่หนังสือ</th>
+                <th>ชั้นความเร็ว</th>
+                <th>หัวข้อเรื่อง</th>
+                <th>หน่วยงาน</th>
+                <th>ผู้ลงนาม</th>
+              </tr>
+            </thead>
+            <tbody id="recentTable">
+              <tr><td colspan="7" style="text-align:center;color:#aaa;padding:32px">ยังไม่มีข้อมูล</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ REGISTER SECTION ═══════════ -->
+    <div id="sec-register" style="display:none">
+
+      <div class="running-num-display">
+        <div class="label">เลขรับที่จะออกให้</div>
+        <div class="num" id="previewRunning">กำลังโหลด...</div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-header">
+          <span class="header-icon">📥</span>
+          <h2>บันทึกลงรับหนังสือราชการ</h2>
+        </div>
+        <div class="form-body">
+          <div class="form-grid three">
+
+            <!-- ── ส่วนที่ 1: ข้อมูลหนังสือ ── -->
+            <div class="section-divider span3"><span>📄 ข้อมูลหนังสือ</span></div>
+
+            <div class="form-group">
+              <label class="form-label">วันที่ลงรับ <span class="req">*</span></label>
+              <input type="date" id="f_date" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">เวลาที่รับ <span class="req">*</span></label>
+              <input type="time" id="f_time" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">เลขที่หนังสือต้นทาง <span class="req">*</span></label>
+              <input type="text" id="f_docno" class="form-input" placeholder="เช่น กษ 0720/12345" />
+            </div>
+
+            <!-- ── ชั้นความเร็ว ── -->
+            <div class="form-group span3">
+              <label class="form-label">ชั้นความเร็ว / ชั้นความลับ <span class="req">*</span></label>
+              <div class="speed-grid">
+                <button type="button" class="speed-btn speed-normal selected" data-val="ปกติ" onclick="selectSpeed(this)">ปกติ</button>
+                <button type="button" class="speed-btn speed-duan" data-val="ด่วน" onclick="selectSpeed(this)">ด่วน</button>
+                <button type="button" class="speed-btn speed-duan-mak" data-val="ด่วนมาก" onclick="selectSpeed(this)">ด่วนมาก</button>
+                <button type="button" class="speed-btn speed-duan-sud" data-val="ด่วนที่สุด" onclick="selectSpeed(this)">ด่วนที่สุด</button>
+                <button type="button" class="speed-btn speed-lab" data-val="ลับ" onclick="selectSpeed(this)">ลับ</button>
+                <button type="button" class="speed-btn speed-lab-mak" data-val="ลับมาก" onclick="selectSpeed(this)">ลับมาก</button>
+                <button type="button" class="speed-btn speed-lab-sud" data-val="ลับที่สุด" onclick="selectSpeed(this)">ลับที่สุด</button>
+              </div>
+            </div>
+
+            <!-- ── หัวข้อเรื่อง ── -->
+            <div class="form-group span3">
+              <label class="form-label">หัวข้อเรื่อง <span class="req">*</span></label>
+              <textarea id="f_subject" class="form-textarea" rows="2" placeholder="กรอกหัวข้อเรื่องของหนังสือ..."></textarea>
+            </div>
+
+            <!-- ── ส่วนที่ 2: ผู้เกี่ยวข้อง ── -->
+            <div class="section-divider span3"><span>🏢 ผู้เกี่ยวข้อง</span></div>
+
+            <div class="form-group">
+              <label class="form-label">ผู้ลงนาม <span class="req">*</span></label>
+              <input type="text" id="f_signer" class="form-input" placeholder="ชื่อ-ตำแหน่งผู้ลงนาม" />
+            </div>
+
+            <div class="form-group span2">
+              <label class="form-label">หน่วยงานเจ้าของเรื่อง <span class="req">*</span></label>
+              <div class="dept-combo">
+                <select id="f_dept_select" class="form-select" onchange="deptChange()">
+                  <option value="">— เลือกหน่วยงาน —</option>
+                  <option>ส่วนอำนวยการ</option>
+                  <option>ส่วนจัดการที่ดินป่าไม้</option>
+                  <option>ส่วนป้องกันรักษาป่าและควบคุมไฟป่า</option>
+                  <option>ส่วนจัดการป่าชุมชน</option>
+                  <option>ส่วนส่งเสริมการปลูกป่า</option>
+                  <option>ส่วนโครงการพระราชดำริและกิจการพิเศษ</option>
+                  <option>ส่วนการอนุญาต</option>
+                  <option>ศูนย์ป่าไม้ตาก</option>
+                  <option>ศูนย์ป่าไม้กำแพงเพชร</option>
+                  <option>ศูนย์ป่าไม้สุโขทัย</option>
+                  <option value="__custom__">➕ พิมพ์หน่วยงานอื่น...</option>
+                </select>
+                <input type="text" id="f_dept_custom" class="form-input" placeholder="ระบุหน่วยงาน..." />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">เจ้าหน้าที่ผู้รับเรื่อง <span class="req">*</span></label>
+              <input type="text" id="f_receiver" class="form-input" placeholder="ชื่อเจ้าหน้าที่" />
+            </div>
+
+            <div class="form-group span2">
+              <label class="form-label">ถึง (ผู้รับหนังสือ) <span class="req">*</span></label>
+              <div style="display:flex;gap:8px">
+                <select id="f_to_select" class="form-select" style="flex:1" onchange="toChange()">
+                  <option value="ผู้อำนวยการสำนักจัดการทรัพยากรป่าไม้ที่ 4 ตาก">ผู้อำนวยการสำนักจัดการทรัพยากรป่าไม้ที่ 4 ตาก</option>
+                  <option value="__custom__">➕ ระบุเพิ่มเติม...</option>
+                </select>
+                <input type="text" id="f_to_custom" class="form-input" placeholder="ระบุผู้รับ..." style="flex:1;display:none" />
+              </div>
+            </div>
+
+            <!-- ── หมายเหตุ ── -->
+            <div class="form-group span3">
+              <label class="form-label">หมายเหตุ (ถ้ามี)</label>
+              <input type="text" id="f_remark" class="form-input" placeholder="หมายเหตุเพิ่มเติม..." />
+            </div>
+
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="clearForm()">🗑️ ล้างข้อมูล</button>
+          <a id="btnSupabase" href="#" target="_blank" class="btn btn-supabase" style="text-decoration:none">🗄️ ดูข้อมูลใน Supabase</a>
+          <button class="btn btn-primary" onclick="saveDocument()">💾 บันทึกและออกเลขรับ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ LIST SECTION ═══════════ -->
+    <div id="sec-list" style="display:none">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>📋 รายการหนังสือทั้งหมด</h3>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="searchInput" class="form-input" style="width:220px;font-size:13px;padding:8px 12px" placeholder="🔍 ค้นหา..." oninput="filterTable()" />
+            <button class="btn btn-secondary" style="font-size:13px;padding:8px 16px" onclick="refreshTable()">🔄 รีเฟรช</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>เลขรับ</th>
+                <th>วันที่ลงรับ</th>
+                <th>เวลา</th>
+                <th>เลขที่หนังสือ</th>
+                <th>ชั้นความเร็ว</th>
+                <th>หัวข้อเรื่อง</th>
+                <th>หน่วยงาน</th>
+                <th>ผู้ลงนาม</th>
+                <th>เจ้าหน้าที่รับ</th>
+                <th>ถึง</th>
+              </tr>
+            </thead>
+            <tbody id="allTable">
+              <tr><td colspan="10" style="text-align:center;color:#aaa;padding:32px">กำลังโหลด...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">บันทึกสำเร็จ!</div>
+    <div class="modal-doc-num" id="modalDocNum">สจป.4/0001</div>
+    <div class="modal-sub" id="modalSub">เลขรับหนังสือที่ออกให้</div>
+    <button class="btn btn-primary modal-close" onclick="closeModal()">ตกลง</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✅</span>
+  <span id="toastMsg">บันทึกสำเร็จ</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SUPABASE CONFIG — แก้ไข URL และ ANON KEY ของคุณที่นี่
+═══════════════════════════════════════════════════════════ -->
+<script>
+  // ══ 🔧 ตั้งค่า Supabase ══
+  const SUPABASE_URL  = 'https://eawskoljyynltsfrgpei.supabase.co';   // ← เปลี่ยน
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhd3Nrb2xqeXlubHRzZnJncGVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTUxNDYsImV4cCI6MjA5MjM3MTE0Nn0.sWFYviXzGWfx-5732wCEbzCh6XuBkkx8gJodKNFRns0';                       // ← เปลี่ยน
+  const TABLE_NAME    = 'documents';
+  const SUPABASE_TABLE_URL = `${SUPABASE_URL}/rest/v1/${TABLE_NAME}`;
+
+  // ── Supabase link buttons ──
+  document.getElementById('supabaseLink').href = `${SUPABASE_URL}/project/default/editor`;
+  document.getElementById('btnSupabase').href  = `${SUPABASE_URL}/project/default/editor`;
+
+  // ── Helper: API headers ──
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+
+  // ── Check login ──
+  if (!sessionStorage.getItem('loggedIn')) window.location.href = 'index.html';
+  document.getElementById('sidebarUser').textContent = sessionStorage.getItem('userName') || 'เจ้าหน้าที่';
+
+  // ── Date / Time ──
+  function thDate(d) {
+    if (!d) return '';
+    const dt = typeof d === 'string' ? new Date(d) : d;
+    return dt.toLocaleDateString('th-TH', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+  }
+
+  function setDateTime() {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm   = String(now.getMonth()+1).padStart(2,'0');
+    const dd   = String(now.getDate()).padStart(2,'0');
+    const hh   = String(now.getHours()).padStart(2,'0');
+    const mi   = String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('f_date').value = `${yyyy}-${mm}-${dd}`;
+    document.getElementById('f_time').value = `${hh}:${mi}`;
+    document.getElementById('currentDate').textContent = thDate(now);
+  }
+  setDateTime();
+
+  // ── Navigation ──
+  const titles = { dashboard:'แดชบอร์ด — ระบบลงรับหนังสือราชการ', register:'บันทึกลงรับหนังสือ', list:'รายการหนังสือทั้งหมด' };
+
+  function showSection(sec) {
+    ['dashboard','register','list'].forEach(s => {
+      document.getElementById('sec-'+s).style.display = (s===sec) ? '' : 'none';
+    });
+    document.querySelectorAll('.nav-item').forEach((el,i) => el.classList.remove('active'));
+    document.getElementById('pageTitle').textContent = titles[sec] || '';
+
+    if (sec==='dashboard') { loadStats(); loadRecentTable(); document.querySelectorAll('.nav-item')[0].classList.add('active'); }
+    if (sec==='register')  { loadNextRunning(); document.querySelectorAll('.nav-item')[1].classList.add('active'); }
+    if (sec==='list')      { loadAllTable(); document.querySelectorAll('.nav-item')[2].classList.add('active'); }
+  }
+
+  // ── Speed selection ──
+  let selectedSpeed = 'ปกติ';
+  function selectSpeed(btn) {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedSpeed = btn.dataset.val;
+  }
+
+  // ── Dept combo ──
+  function deptChange() {
+    const sel = document.getElementById('f_dept_select').value;
+    const inp = document.getElementById('f_dept_custom');
+    inp.style.display = sel === '__custom__' ? '' : 'none';
+    if (sel !== '__custom__') inp.value = '';
+  }
+
+  function toChange() {
+    const sel = document.getElementById('f_to_select').value;
+    const inp = document.getElementById('f_to_custom');
+    inp.style.display = sel === '__custom__' ? '' : 'none';
+    if (sel !== '__custom__') inp.value = '';
+  }
+
+  function getDept() {
+    const sel = document.getElementById('f_dept_select').value;
+    if (sel === '__custom__') return document.getElementById('f_dept_custom').value.trim();
+    return sel;
+  }
+
+  function getTo() {
+    const sel = document.getElementById('f_to_select').value;
+    if (sel === '__custom__') return document.getElementById('f_to_custom').value.trim();
+    return sel;
+  }
+
+  // ── Next running number ──
+  async function loadNextRunning() {
+    const year = new Date().getFullYear() + 543;
+    try {
+      const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
+      const d = await r.json();
+      const last = d && d.length ? d[0].running_number : 0;
+      const next = last + 1;
+      document.getElementById('previewRunning').textContent = `สจป.4-${year}-${String(next).padStart(4,'0')}`;
+    } catch {
+      document.getElementById('previewRunning').textContent = 'ไม่สามารถเชื่อมต่อ Supabase ได้';
+    }
+  }
+
+  // ── Save document ──
+  async function saveDocument() {
+    const f_date     = document.getElementById('f_date').value;
+    const f_time     = document.getElementById('f_time').value;
+    const f_docno    = document.getElementById('f_docno').value.trim();
+    const f_subject  = document.getElementById('f_subject').value.trim();
+    const f_signer   = document.getElementById('f_signer').value.trim();
+    const f_receiver = document.getElementById('f_receiver').value.trim();
+    const f_remark   = document.getElementById('f_remark').value.trim();
+    const dept       = getDept();
+    const toField    = getTo();
+
+    if (!f_date||!f_time||!f_docno||!f_subject||!f_signer||!f_receiver||!dept||!toField) {
+      showToast('❌','กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+      return;
+    }
+
+    const year = new Date().getFullYear() + 543;
+
+    // Get next running number
+    let nextNum = 1;
+    try {
+      const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
+      const d = await r.json();
+      if (d && d.length) nextNum = d[0].running_number + 1;
+    } catch {}
+
+    const docId = `สจป.4-${year}-${String(nextNum).padStart(4,'0')}`;
+
+    const payload = {
+      running_number: nextNum,
+      doc_id:         docId,
+      received_date:  f_date,
+      received_time:  f_time,
+      original_docno: f_docno,
+      speed_level:    selectedSpeed,
+      subject:        f_subject,
+      signer:         f_signer,
+      department:     dept,
+      receiver_officer: f_receiver,
+      to_recipient:   toField,
+      remark:         f_remark,
+      created_at:     new Date().toISOString()
+    };
+
+    try {
+      const r = await fetch(SUPABASE_TABLE_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (r.ok) {
+        document.getElementById('modalDocNum').textContent = docId;
+        document.getElementById('modalSub').textContent = `หนังสือ: ${f_subject.substring(0,40)}${f_subject.length>40?'...':''}`;
+        document.getElementById('successModal').classList.add('open');
+        clearForm();
+        loadStats();
+      } else {
+        const err = await r.json();
+        showToast('❌', 'บันทึกไม่สำเร็จ: ' + (err.message || 'กรุณาตรวจสอบการตั้งค่า Supabase'));
+      }
+    } catch (e) {
+      showToast('❌', 'ไม่สามารถเชื่อมต่อ Supabase ได้ — กรุณาตั้งค่า URL และ KEY');
+      console.error(e);
+    }
+  }
+
+  function clearForm() {
+    document.getElementById('f_docno').value = '';
+    document.getElementById('f_subject').value = '';
+    document.getElementById('f_signer').value = '';
+    document.getElementById('f_receiver').value = '';
+    document.getElementById('f_remark').value = '';
+    document.getElementById('f_dept_select').value = '';
+    document.getElementById('f_dept_custom').value = '';
+    document.getElementById('f_dept_custom').style.display = 'none';
+    document.getElementById('f_to_select').value = 'ผู้อำนวยการสำนักจัดการทรัพยากรป่าไม้ที่ 4 ตาก';
+    document.getElementById('f_to_custom').value = '';
+    document.getElementById('f_to_custom').style.display = 'none';
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelector('.speed-normal').classList.add('selected');
+    selectedSpeed = 'ปกติ';
+    setDateTime();
+    loadNextRunning();
+  }
+
+  // ── Load stats ──
+  async function loadStats() {
+    try {
+      // Total
+      const rTotal = await fetch(`${SUPABASE_TABLE_URL}?select=id`, { headers: {...headers,'Prefer':'count=exact'} });
+      const total = parseInt(rTotal.headers.get('content-range')?.split('/')[1] || '0');
+
+      // Today
+      const today = new Date().toISOString().split('T')[0];
+      const rToday = await fetch(`${SUPABASE_TABLE_URL}?select=id&received_date=eq.${today}`, { headers: {...headers,'Prefer':'count=exact'} });
+      const todayCount = parseInt(rToday.headers.get('content-range')?.split('/')[1] || '0');
+
+      // Urgent
+      const rUrgent = await fetch(`${SUPABASE_TABLE_URL}?select=id&speed_level=neq.ปกติ`, { headers: {...headers,'Prefer':'count=exact'} });
+      const urgentCount = parseInt(rUrgent.headers.get('content-range')?.split('/')[1] || '0');
+
+      // Next running
+      const rNext = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
+      const dNext = await rNext.json();
+      const nextNum = (dNext && dNext.length ? dNext[0].running_number : 0) + 1;
+      const year = new Date().getFullYear() + 543;
+
+      document.getElementById('countToday').textContent  = todayCount;
+      document.getElementById('countTotal').textContent  = total;
+      document.getElementById('countUrgent').textContent = urgentCount;
+      document.getElementById('nextRunning').textContent = String(nextNum).padStart(4,'0');
+    } catch {}
+  }
+
+  // ── Badge helper ──
+  const speedBadge = {
+    'ปกติ':      'badge-normal',
+    'ด่วน':      'badge-duan',
+    'ด่วนมาก':   'badge-duan-mak',
+    'ด่วนที่สุด':'badge-duan-sud',
+    'ลับ':       'badge-lab',
+    'ลับมาก':    'badge-lab-mak',
+    'ลับที่สุด': 'badge-lab-sud',
+  };
+
+  function speedBadgeHtml(speed) {
+    const cls = speedBadge[speed] || 'badge-normal';
+    return `<span class="badge ${cls}">${speed}</span>`;
+  }
+
+  // ── Load recent table ──
+  async function loadRecentTable() {
+    const tbody = document.getElementById('recentTable');
+    try {
+      const r = await fetch(`${SUPABASE_TABLE_URL}?select=*&order=running_number.desc&limit=10`, { headers });
+      const d = await r.json();
+      if (!d.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#aaa;padding:32px">ยังไม่มีข้อมูล</td></tr>'; return; }
+      tbody.innerHTML = d.map(row => `
+        <tr>
+          <td><span class="doc-num">${row.doc_id}</span></td>
+          <td>${row.received_date || ''}</td>
+          <td>${row.original_docno || ''}</td>
+          <td>${speedBadgeHtml(row.speed_level)}</td>
+          <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${row.subject || ''}</td>
+          <td>${row.department || ''}</td>
+          <td>${row.signer || ''}</td>
+        </tr>`).join('');
+    } catch {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#e57;padding:32px">ไม่สามารถเชื่อมต่อ Supabase ได้</td></tr>';
+    }
+  }
+
+  let allData = [];
+  async function loadAllTable() {
+    const tbody = document.getElementById('allTable');
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#aaa;padding:32px">กำลังโหลด...</td></tr>';
+    try {
+      const r = await fetch(`${SUPABASE_TABLE_URL}?select=*&order=running_number.desc`, { headers });
+      allData = await r.json();
+      renderAllTable(allData);
+    } catch {
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#e57;padding:32px">ไม่สามารถเชื่อมต่อ Supabase ได้</td></tr>';
+    }
+  }
+
+  function renderAllTable(data) {
+    const tbody = document.getElementById('allTable');
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#aaa;padding:32px">ยังไม่มีข้อมูล</td></tr>'; return; }
+    tbody.innerHTML = data.map(row => `
+      <tr>
+        <td><span class="doc-num">${row.doc_id}</span></td>
+        <td>${row.received_date||''}</td>
+        <td>${row.received_time||''}</td>
+        <td>${row.original_docno||''}</td>
+        <td>${speedBadgeHtml(row.speed_level)}</td>
+        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${row.subject||''}</td>
+        <td>${row.department||''}</td>
+        <td>${row.signer||''}</td>
+        <td>${row.receiver_officer||''}</td>
+        <td style="max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${row.to_recipient||''}</td>
+      </tr>`).join('');
+  }
+
+  function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    if (!q) { renderAllTable(allData); return; }
+    renderAllTable(allData.filter(r =>
+      Object.values(r).some(v => v && String(v).toLowerCase().includes(q))
+    ));
+  }
+
+  function refreshTable() {
+    const sec = document.getElementById('sec-list').style.display !== 'none' ? 'list' : 'dashboard';
+    if (sec === 'list') loadAllTable();
+    else { loadStats(); loadRecentTable(); }
+  }
+
+  // ── Modal ──
+  function closeModal() {
+    document.getElementById('successModal').classList.remove('open');
+    loadNextRunning();
+  }
+
+  // ── Toast ──
+  function showToast(icon, msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMsg').textContent  = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── Logout ──
+  function doLogout() {
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  // ── Init ──
+  loadStats();
+  loadRecentTable();
+</script>
+</body>
+</html>

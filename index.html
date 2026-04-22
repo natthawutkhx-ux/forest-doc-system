@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ระบบลงรับหนังสือราชการ — สจป.ที่ 4 ตาก</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --forest-dark:  #1a2e1a;
+      --forest-mid:   #2d4a2d;
+      --forest-light: #3d6b3d;
+      --forest-pale:  #e8f0e8;
+      --gold:         #c9a84c;
+      --gold-light:   #e8c97a;
+      --cream:        #f5f0e8;
+      --white:        #ffffff;
+      --text-dark:    #1a2e1a;
+      --text-mid:     #3d5a3d;
+      --text-light:   #6b8f6b;
+      --border:       #c8d8c8;
+      --shadow:       rgba(26,46,26,0.15);
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--forest-dark);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated forest background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(61,107,61,0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(45,74,45,0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(26,46,26,0.8) 0%, transparent 70%),
+        linear-gradient(135deg, #0d1f0d 0%, #1a2e1a 40%, #2d4a2d 100%);
+      z-index: 0;
+    }
+
+    /* Tree silhouette SVG pattern */
+    body::after {
+      content: '';
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 280px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 280'%3E%3Cpath fill='%230d1a0d' fill-opacity='0.6' d='M0,280 L0,180 Q60,120 80,160 Q100,80 120,130 Q140,60 160,120 Q180,70 200,140 Q220,90 240,150 L240,280Z M200,280 L200,190 Q260,130 280,170 Q300,90 320,140 Q340,70 360,130 Q380,80 400,150 Q420,100 440,160 L440,280Z M400,280 L400,200 Q460,140 480,180 Q500,100 520,150 Q540,80 560,140 Q580,90 600,155 Q620,110 640,170 L640,280Z M600,280 L600,185 Q660,125 680,165 Q700,85 720,135 Q740,65 760,125 Q780,75 800,145 Q820,95 840,155 L840,280Z M800,280 L800,195 Q860,135 880,175 Q900,95 920,145 Q940,75 960,135 Q980,85 1000,150 Q1020,100 1040,160 L1040,280Z M1000,280 L1000,190 Q1060,130 1080,170 Q1100,90 1120,140 Q1140,70 1160,130 Q1180,80 1200,150 Q1220,100 1240,160 L1240,280Z M1200,280 L1200,200 Q1260,140 1280,180 Q1300,100 1320,150 Q1340,80 1360,140 Q1380,90 1400,155 Q1420,110 1440,170 L1440,280Z'/%3E%3C/svg%3E") no-repeat bottom;
+      background-size: cover;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .login-container {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 460px;
+      padding: 20px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-card {
+      background: rgba(245,240,232,0.97);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.3);
+    }
+
+    .login-header {
+      background: linear-gradient(160deg, var(--forest-dark) 0%, var(--forest-mid) 100%);
+      padding: 36px 40px 28px;
+      text-align: center;
+      position: relative;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .emblem-wrapper {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; margin-bottom: 16px;
+    }
+
+    .emblem-icon {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 4px 16px rgba(201,168,76,0.4);
+      flex-shrink: 0;
+    }
+
+    .org-text { text-align: left; }
+
+    .org-title {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 13px; font-weight: 700;
+      color: var(--gold-light);
+      letter-spacing: 0.5px;
+      line-height: 1.5;
+    }
+
+    .org-sub {
+      font-size: 11px; color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+
+    .system-title {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 18px; font-weight: 700;
+      color: var(--white);
+      margin-top: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .system-subtitle {
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      margin-top: 4px;
+    }
+
+    .login-body { padding: 32px 40px 36px; }
+
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      display: block;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px;
+      color: var(--text-dark);
+      background: var(--white);
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--forest-light);
+      box-shadow: 0 0 0 3px rgba(61,107,61,0.12);
+    }
+
+    .input-icon-wrap { position: relative; }
+
+    .input-icon {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px; color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .input-icon-wrap .form-input { padding-left: 42px; }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--forest-mid) 0%, var(--forest-dark) 100%);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 16px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-login::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--shadow); }
+    .btn-login:hover::before { opacity: 1; }
+    .btn-login:active { transform: translateY(0); }
+
+    .error-msg {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .login-footer {
+      text-align: center;
+      padding: 0 40px 28px;
+      font-size: 11px;
+      color: var(--text-light);
+      line-height: 1.8;
+    }
+
+    .login-footer strong { color: var(--text-mid); }
+
+    /* Demo credentials hint */
+    .demo-hint {
+      background: var(--forest-pale);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--text-mid);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .demo-hint strong { color: var(--forest-dark); }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="emblem-wrapper">
+          <div class="emblem-icon">🌲</div>
+          <div class="org-text">
+            <div class="org-title">กรมป่าไม้ กระทรวงทรัพยากรธรรมชาติและสิ่งแวดล้อม</div>
+            <div class="org-sub">Royal Forest Department · Ministry of Natural Resources and Environment</div>
+          </div>
+        </div>
+        <div class="system-title">ระบบลงรับหนังสือราชการ</div>
+        <div class="system-subtitle">สำนักจัดการทรัพยากรป่าไม้ที่ 4 (ตาก)</div>
+      </div>
+
+      <div class="login-body">
+        <div class="demo-hint">
+          <strong>ข้อมูลสำหรับทดสอบ:</strong><br>
+          ชื่อผู้ใช้: <strong>admin</strong> &nbsp;|&nbsp; รหัสผ่าน: <strong>forest2567</strong>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ชื่อผู้ใช้งาน</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" id="username" class="form-input" placeholder="กรอกชื่อผู้ใช้งาน" autocomplete="username" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">รหัสผ่าน</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="password" class="form-input" placeholder="กรอกรหัสผ่าน" autocomplete="current-password" />
+          </div>
+        </div>
+
+        <button class="btn-login" onclick="doLogin()">เข้าสู่ระบบ</button>
+        <div class="error-msg" id="errorMsg">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</div>
+      </div>
+
+      <div class="login-footer">
+        <strong>สำนักจัดการทรัพยากรป่าไม้ที่ 4 (ตาก)</strong><br>
+        ถ.พหลโยธิน ต.หนองหลวง อ.เมือง จ.ตาก 63000<br>
+        โทร. 0-5551-1352 · ระบบเวอร์ชัน 1.0 · พ.ศ. 2567
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function doLogin() {
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value.trim();
+      const err = document.getElementById('errorMsg');
+      if (u === 'admin' && p === 'forest2567') {
+        err.style.display = 'none';
+        sessionStorage.setItem('loggedIn', '1');
+        sessionStorage.setItem('userName', 'ผู้ดูแลระบบ');
+        window.location.href = 'dashboard.html';
+      } else {
+        err.style.display = 'block';
+      }
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  </script>
+</body>
+</html>
