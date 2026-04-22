@@ -1050,7 +1050,7 @@
       // Next running
       const rNext = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
       const dNext = await rNext.json();
-      const nextNum = (dNext && dNext.length ? dNext[0].running_number : 0) + 1;
+      const nextNum = (dNext && dNext.length ? dNext[0].running_number : 2549) + 1;
       const year = new Date().getFullYear() + 543;
 
       document.getElementById('countToday').textContent  = todayCount;
