@@ -936,7 +936,7 @@
     try {
       const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
       const d = await r.json();
-      const last = d && d.length ? d[0].running_number : 0;
+      const last = d && d.length ? d[0].running_number : 2549;
       const next = last + 1;
       document.getElementById('previewRunning').textContent = `สจป.4-${year}-${String(next).padStart(4,'0')}`;
     } catch {
