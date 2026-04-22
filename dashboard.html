@@ -907,8 +907,13 @@
   function deptChange() {
     const sel = document.getElementById('f_dept_select').value;
     const inp = document.getElementById('f_dept_custom');
-    inp.style.display = sel === '__custom__' ? '' : 'none';
-    if (sel !== '__custom__') inp.value = '';
+    if (sel === '__custom__') {
+      inp.style.display = 'block';
+      inp.focus();
+    } else {
+      inp.style.display = 'none';
+      inp.value = '';
+    }
   }
 
   function toChange() {
