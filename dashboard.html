@@ -936,7 +936,7 @@
     try {
       const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
       const d = await r.json();
-      const last = d && d.length ? d[0].running_number : 2549;
+      const last = d && d.length ? d[0].running_number : 2550;
       const next = last + 1;
       document.getElementById('previewRunning').textContent = `สจป.4-${year}-${String(next).padStart(4,'0')}`;
     } catch {
@@ -964,11 +964,12 @@
     const year = new Date().getFullYear() + 543;
 
     // Get next running number
-    let nextNum = 1;
+    let nextNum = 2550;
     try {
       const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
       const d = await r.json();
       if (d && d.length) nextNum = d[0].running_number + 1;
+else nextNum = 2550;
     } catch {}
 
     const docId = `สจป.4-${year}-${String(nextNum).padStart(4,'0')}`;
