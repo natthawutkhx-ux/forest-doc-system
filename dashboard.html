@@ -1,2699 +1,1178 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ระบบเซ็นเอกสารออนไลน์ | กรมป่าไม้</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Noto+Serif+Thai:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-:root {
-  --forest-dark: #1a4731;
-  --forest-mid: #2d6a4f;
-  --forest-main: #40916c;
-  --forest-light: #52b788;
-  --forest-pale: #74c69d;
-  --forest-mist: #b7e4c7;
-  --forest-snow: #d8f3dc;
-  --forest-fog: #f0faf4;
-  --gold: #c9a84c;
-  --gold-light: #e9c46a;
-  --cream: #fefae0;
-  --white: #ffffff;
-  --gray-50: #f8fafc;
-  --gray-100: #f1f5f9;
-  --gray-200: #e2e8f0;
-  --gray-300: #cbd5e1;
-  --gray-400: #94a3b8;
-  --gray-500: #64748b;
-  --gray-600: #475569;
-  --gray-700: #334155;
-  --gray-800: #1e293b;
-  --red: #ef4444;
-  --amber: #f59e0b;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow: 0 4px 16px rgba(26,71,49,0.12);
-  --shadow-lg: 0 12px 40px rgba(26,71,49,0.18);
-  --shadow-xl: 0 24px 64px rgba(26,71,49,0.22);
-  --radius: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
-  --font: 'Sarabun', sans-serif;
-  --font-serif: 'Noto Serif Thai', serif;
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — ระบบลงรับหนังสือราชการ สจป.4 ตาก</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --forest-dark:  #1a2e1a;
+      --forest-mid:   #2d4a2d;
+      --forest-light: #3d6b3d;
+      --forest-pale:  #e8f0e8;
+      --forest-bg:    #f2f6f2;
+      --gold:         #c9a84c;
+      --gold-light:   #e8c97a;
+      --cream:        #f5f0e8;
+      --white:        #ffffff;
+      --text-dark:    #1a2e1a;
+      --text-mid:     #3d5a3d;
+      --text-light:   #6b8f6b;
+      --border:       #c8d8c8;
+      --danger:       #dc2626;
+      --warning:      #d97706;
+      --urgent-1:     #2563eb;
+      --urgent-2:     #d97706;
+      --urgent-3:     #dc2626;
+      --secret-1:     #7c3aed;
+      --secret-2:     #9d174d;
+      --secret-3:     #1e1b4b;
+      --shadow:       rgba(26,46,26,0.12);
+      --sidebar-w:    260px;
+    }
 
-body {
-  font-family: var(--font);
-  background: var(--gray-50);
-  color: var(--gray-800);
-  min-height: 100vh;
-  font-size: 15px;
-  line-height: 1.6;
-}
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--forest-bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
 
-/* ═══════════════════════════════════════ LOGIN ═══════════════════════════════════════ */
-#loginPage {
-  min-height: 100vh;
-  display: flex;
-  background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest-mid) 40%, var(--forest-main) 100%);
-  position: relative;
-  overflow: hidden;
-}
-#loginPage::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 20% 20%, rgba(82,183,136,0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(201,168,76,0.1) 0%, transparent 50%);
-  pointer-events: none;
-}
-#loginPage::after {
-  content: '';
-  position: absolute;
-  bottom: -100px; right: -100px;
-  width: 500px; height: 500px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
-}
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: linear-gradient(180deg, var(--forest-dark) 0%, #0f1f0f 100%);
+      z-index: 100;
+      display: flex; flex-direction: column;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+    }
 
-.login-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px;
-  color: white;
-}
-.login-brand {
-  max-width: 480px;
-}
-.login-logo-wrap {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 40px;
-}
-.login-logo-icon {
-  width: 72px; height: 72px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 20px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 36px;
-  border: 1px solid rgba(255,255,255,0.25);
-  backdrop-filter: blur(10px);
-}
-.login-brand-text h1 {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-.login-brand-text p {
-  font-size: 13px;
-  opacity: 0.7;
-  margin-top: 2px;
-}
-.login-headline {
-  font-family: var(--font-serif);
-  font-size: 42px;
-  font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 20px;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
-}
-.login-headline span { color: var(--gold-light); }
-.login-desc {
-  font-size: 16px;
-  opacity: 0.8;
-  line-height: 1.8;
-  margin-bottom: 40px;
-}
-.login-features { display: flex; flex-direction: column; gap: 14px; }
-.login-feat {
-  display: flex; align-items: center; gap: 14px;
-  font-size: 14px; opacity: 0.85;
-}
-.login-feat-icon {
-  width: 36px; height: 36px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0;
-}
+    .sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
 
-.login-right {
-  width: 480px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-}
-.login-card {
-  background: white;
-  border-radius: var(--radius-xl);
-  padding: 48px 44px;
-  width: 100%;
-  box-shadow: var(--shadow-xl);
-}
-.login-card-header { text-align: center; margin-bottom: 36px; }
-.login-card-icon {
-  width: 64px; height: 64px;
-  background: linear-gradient(135deg, var(--forest-main), var(--forest-mid));
-  border-radius: 18px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px; color: white;
-  margin: 0 auto 16px;
-  box-shadow: 0 8px 24px rgba(64,145,108,0.35);
-}
-.login-card-header h2 {
-  font-family: var(--font-serif);
-  font-size: 24px; font-weight: 700;
-  color: var(--forest-dark);
-  margin-bottom: 6px;
-}
-.login-card-header p { font-size: 14px; color: var(--gray-500); }
+    .sidebar-logo {
+      font-size: 36px; margin-bottom: 8px;
+      filter: drop-shadow(0 2px 8px rgba(201,168,76,0.4));
+    }
 
-.form-group { margin-bottom: 20px; }
-.form-label {
-  display: block;
-  font-size: 13px; font-weight: 600;
-  color: var(--gray-700);
-  margin-bottom: 8px;
-  letter-spacing: 0.3px;
-}
-.form-input-wrap { position: relative; }
-.form-input-icon {
-  position: absolute; left: 14px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--gray-400); font-size: 15px;
-}
-.form-input {
-  width: 100%;
-  padding: 12px 14px 12px 42px;
-  border: 2px solid var(--gray-200);
-  border-radius: var(--radius);
-  font-family: var(--font);
-  font-size: 15px;
-  color: var(--gray-800);
-  transition: var(--transition);
-  background: var(--gray-50);
-  outline: none;
-}
-.form-input:focus {
-  border-color: var(--forest-main);
-  background: white;
-  box-shadow: 0 0 0 4px rgba(64,145,108,0.12);
-}
+    .sidebar-title {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 12px; font-weight: 700;
+      color: var(--gold-light);
+      line-height: 1.6;
+    }
 
-.btn-login {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, var(--forest-main), var(--forest-mid));
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  font-family: var(--font);
-  font-size: 16px; font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  margin-top: 8px;
-  box-shadow: 0 4px 16px rgba(64,145,108,0.35);
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-}
-.btn-login:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(64,145,108,0.45);
-}
-.btn-login:active { transform: translateY(0); }
+    .sidebar-sub {
+      font-size: 10px; color: rgba(255,255,255,0.45);
+      margin-top: 3px;
+    }
 
-.login-divider {
-  display: flex; align-items: center; gap: 12px;
-  margin: 24px 0;
-}
-.login-divider::before, .login-divider::after {
-  content: ''; flex: 1; height: 1px; background: var(--gray-200);
-}
-.login-divider span { font-size: 12px; color: var(--gray-400); white-space: nowrap; }
+    .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
 
-.demo-accounts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.demo-btn {
-  padding: 10px 12px;
-  border: 2px solid var(--gray-200);
-  border-radius: var(--radius);
-  background: var(--gray-50);
-  cursor: pointer;
-  transition: var(--transition);
-  font-family: var(--font);
-  font-size: 12px;
-  text-align: center;
-}
-.demo-btn:hover {
-  border-color: var(--forest-light);
-  background: var(--forest-fog);
-  color: var(--forest-mid);
-}
-.demo-btn strong { display: block; font-size: 13px; color: var(--gray-700); }
+    .nav-label {
+      font-size: 10px; font-weight: 600;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 12px 8px 6px;
+    }
 
-/* ═══════════════════════════════════════ MAIN APP ═══════════════════════════════════════ */
-#mainApp { display: none; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.65);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
 
-/* SIDEBAR */
-.sidebar {
-  position: fixed;
-  left: 0; top: 0; bottom: 0;
-  width: 260px;
-  background: linear-gradient(180deg, var(--forest-dark) 0%, var(--forest-mid) 100%);
-  display: flex;
-  flex-direction: column;
-  z-index: 100;
-  box-shadow: 4px 0 24px rgba(0,0,0,0.15);
-}
-.sidebar-brand {
-  padding: 28px 24px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.sidebar-brand-logo {
-  display: flex; align-items: center; gap: 14px;
-}
-.sidebar-brand-icon {
-  width: 44px; height: 44px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; color: white;
-  border: 1px solid rgba(255,255,255,0.2);
-}
-.sidebar-brand-text h2 {
-  font-family: var(--font-serif);
-  font-size: 14px; font-weight: 700;
-  color: white; line-height: 1.3;
-}
-.sidebar-brand-text p { font-size: 11px; color: rgba(255,255,255,0.55); }
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+    .nav-item.active { background: rgba(201,168,76,0.2); color: var(--gold-light); }
+    .nav-item .icon { font-size: 16px; flex-shrink: 0; }
 
-.sidebar-user {
-  padding: 16px 24px;
-  margin: 8px 12px;
-  background: rgba(255,255,255,0.08);
-  border-radius: var(--radius);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.sidebar-user-avatar {
-  width: 36px; height: 36px;
-  background: var(--forest-light);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; color: white; font-weight: 700;
-  margin-bottom: 8px;
-}
-.sidebar-user-name { font-size: 13px; font-weight: 600; color: white; }
-.sidebar-user-role {
-  font-size: 11px; color: var(--forest-mist);
-  display: flex; align-items: center; gap: 6px;
-}
-.role-badge {
-  background: var(--gold);
-  color: white;
-  padding: 1px 8px;
-  border-radius: 20px;
-  font-size: 10px; font-weight: 600;
-}
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
 
-.sidebar-nav {
-  flex: 1;
-  padding: 8px 12px;
-  overflow-y: auto;
-}
-.sidebar-section {
-  font-size: 10px; font-weight: 700;
-  color: rgba(255,255,255,0.4);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  padding: 14px 12px 6px;
-}
-.nav-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 11px 14px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: var(--transition);
-  margin-bottom: 2px;
-  color: rgba(255,255,255,0.7);
-  font-size: 14px; font-weight: 500;
-  position: relative;
-}
-.nav-item:hover {
-  background: rgba(255,255,255,0.1);
-  color: white;
-}
-.nav-item.active {
-  background: rgba(255,255,255,0.15);
-  color: white;
-  font-weight: 600;
-}
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 8px; bottom: 8px;
-  width: 3px;
-  background: var(--gold-light);
-  border-radius: 0 4px 4px 0;
-}
-.nav-item i { width: 18px; text-align: center; font-size: 15px; }
-.nav-badge {
-  margin-left: auto;
-  background: var(--red);
-  color: white;
-  font-size: 10px; font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 20px;
-  min-width: 20px; text-align: center;
-}
+    .user-info {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
 
-.sidebar-footer {
-  padding: 12px;
-  border-top: 1px solid rgba(255,255,255,0.1);
-}
-.btn-logout {
-  width: 100%;
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  padding: 11px;
-  border-radius: var(--radius);
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.7);
-  cursor: pointer;
-  font-family: var(--font);
-  font-size: 14px; font-weight: 500;
-  transition: var(--transition);
-}
-.btn-logout:hover {
-  background: rgba(239,68,68,0.2);
-  border-color: rgba(239,68,68,0.3);
-  color: #fca5a5;
-}
+    .user-avatar {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--forest-light), var(--forest-mid));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
 
-/* MAIN CONTENT */
-.main-content {
-  margin-left: 260px;
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-}
+    .user-name { font-size: 13px; font-weight: 600; color: var(--white); }
+    .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
 
-.topbar {
-  background: white;
-  border-bottom: 1px solid var(--gray-200);
-  padding: 16px 32px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 50;
-  box-shadow: var(--shadow-sm);
-}
-.topbar-left h1 {
-  font-family: var(--font-serif);
-  font-size: 20px; font-weight: 700;
-  color: var(--forest-dark);
-}
-.topbar-left p { font-size: 13px; color: var(--gray-500); margin-top: 1px; }
-.topbar-right { display: flex; align-items: center; gap: 12px; }
+    .btn-logout {
+      width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 9px;
+      background: rgba(220,38,38,0.15);
+      border: 1px solid rgba(220,38,38,0.3);
+      border-radius: 7px;
+      color: #fca5a5;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
 
-.btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 20px;
-  border-radius: var(--radius);
-  font-family: var(--font);
-  font-size: 14px; font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  border: none;
-  text-decoration: none;
-}
-.btn-primary {
-  background: linear-gradient(135deg, var(--forest-main), var(--forest-mid));
-  color: white;
-  box-shadow: 0 4px 12px rgba(64,145,108,0.3);
-}
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(64,145,108,0.4);
-}
-.btn-secondary {
-  background: white;
-  color: var(--gray-700);
-  border: 2px solid var(--gray-200);
-}
-.btn-secondary:hover { border-color: var(--forest-main); color: var(--forest-main); background: var(--forest-fog); }
-.btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-.btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
-.btn-gold { background: linear-gradient(135deg, var(--gold), #a07830); color: white; }
-.btn-sm { padding: 7px 14px; font-size: 13px; }
-.btn-icon { padding: 9px; border-radius: 10px; }
+    .btn-logout:hover { background: rgba(220,38,38,0.3); color: #fff; }
 
-.page-content { padding: 32px; flex: 1; }
+    /* ─── MAIN CONTENT ─── */
+    .main {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
 
-/* ═══════════════════════════════════════ CARDS ═══════════════════════════════════════ */
-.card {
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  border: 1px solid var(--gray-200);
-}
-.card-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--gray-100);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.card-header-left { display: flex; align-items: center; gap: 12px; }
-.card-header-icon {
-  width: 40px; height: 40px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-}
-.card-header-icon.green { background: var(--forest-snow); color: var(--forest-main); }
-.card-header-icon.gold { background: #fef3c7; color: var(--gold); }
-.card-header-icon.blue { background: #dbeafe; color: #3b82f6; }
-.card-header-icon.red { background: #fee2e2; color: var(--red); }
-.card-title { font-size: 16px; font-weight: 700; color: var(--gray-800); }
-.card-subtitle { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
-.card-body { padding: 24px; }
+    .topbar {
+      background: var(--white);
+      border-bottom: 2px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
 
-/* ═══════════════════════════════════════ STAT CARDS ═══════════════════════════════════════ */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 28px;
-}
-.stat-card {
-  background: white;
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--gray-200);
-  position: relative;
-  overflow: hidden;
-  transition: var(--transition);
-}
-.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-.stat-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-}
-.stat-card.green::after { background: linear-gradient(90deg, var(--forest-main), var(--forest-light)); }
-.stat-card.gold::after { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
-.stat-card.blue::after { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-.stat-card.red::after { background: linear-gradient(90deg, var(--red), #f87171); }
-.stat-card.amber::after { background: linear-gradient(90deg, var(--amber), #fcd34d); }
+    .topbar-title {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 16px; font-weight: 700;
+      color: var(--forest-dark);
+    }
 
-.stat-icon {
-  width: 48px; height: 48px;
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  margin-bottom: 16px;
-}
-.stat-card.green .stat-icon { background: var(--forest-snow); color: var(--forest-main); }
-.stat-card.gold .stat-icon { background: #fef3c7; color: var(--gold); }
-.stat-card.blue .stat-icon { background: #dbeafe; color: #3b82f6; }
-.stat-card.red .stat-icon { background: #fee2e2; color: var(--red); }
-.stat-card.amber .stat-icon { background: #fef9c3; color: var(--amber); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
 
-.stat-value {
-  font-size: 36px; font-weight: 800;
-  color: var(--gray-800);
-  line-height: 1;
-  margin-bottom: 6px;
-  font-family: var(--font-serif);
-}
-.stat-label { font-size: 13px; color: var(--gray-500); font-weight: 500; }
-.stat-change {
-  position: absolute; top: 20px; right: 20px;
-  font-size: 11px; font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 20px;
-}
-.stat-change.up { background: var(--forest-snow); color: var(--forest-main); }
-.stat-change.down { background: #fee2e2; color: var(--red); }
+    .date-badge {
+      background: var(--forest-pale);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px; font-weight: 500;
+      color: var(--text-mid);
+    }
 
-/* ═══════════════════════════════════════ TABLE ═══════════════════════════════════════ */
-.table-wrap { overflow-x: auto; }
-table.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-.data-table thead th {
-  background: var(--forest-fog);
-  color: var(--forest-dark);
-  font-weight: 700;
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 2px solid var(--forest-snow);
-  font-size: 13px;
-  white-space: nowrap;
-}
-.data-table tbody tr {
-  border-bottom: 1px solid var(--gray-100);
-  transition: var(--transition);
-}
-.data-table tbody tr:hover { background: var(--forest-fog); }
-.data-table td { padding: 14px 16px; vertical-align: middle; }
+    .content { padding: 28px 32px; flex: 1; }
 
-/* STATUS BADGES */
-.status-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px; font-weight: 600;
-  white-space: nowrap;
-}
-.status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
-.badge-pending { background: #fef9c3; color: #92400e; }
-.badge-pending::before { background: var(--amber); }
-.badge-signed { background: var(--forest-snow); color: var(--forest-dark); }
-.badge-signed::before { background: var(--forest-main); }
-.badge-rejected { background: #fee2e2; color: #991b1b; }
-.badge-rejected::before { background: var(--red); }
-.badge-waiting { background: #dbeafe; color: #1e40af; }
-.badge-waiting::before { background: #3b82f6; }
+    /* ─── STATS CARDS ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
 
-/* ═══════════════════════════════════════ MODAL ═══════════════════════════════════════ */
-.modal-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(15,23,42,0.6);
-  backdrop-filter: blur(4px);
-  z-index: 200;
-  align-items: center; justify-content: center;
-  padding: 20px;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: white;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  width: 100%; max-width: 680px;
-  max-height: 90vh;
-  display: flex; flex-direction: column;
-  animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.modal-lg { max-width: 900px; }
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.92) translateY(-20px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-.modal-header {
-  padding: 24px 28px 20px;
-  border-bottom: 1px solid var(--gray-100);
-  display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0;
-}
-.modal-title {
-  display: flex; align-items: center; gap: 12px;
-  font-size: 18px; font-weight: 700;
-  color: var(--forest-dark);
-  font-family: var(--font-serif);
-}
-.modal-title-icon {
-  width: 38px; height: 38px;
-  background: var(--forest-snow);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; color: var(--forest-main);
-}
-.modal-close {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  border: none;
-  background: var(--gray-100);
-  color: var(--gray-500);
-  cursor: pointer;
-  font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  transition: var(--transition);
-}
-.modal-close:hover { background: #fee2e2; color: var(--red); }
-.modal-body {
-  padding: 24px 28px;
-  overflow-y: auto;
-  flex: 1;
-}
-.modal-footer {
-  padding: 16px 28px 24px;
-  border-top: 1px solid var(--gray-100);
-  display: flex; gap: 12px; justify-content: flex-end;
-  flex-shrink: 0;
-}
+    .stat-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px 22px;
+      box-shadow: 0 2px 8px var(--shadow);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      transition: transform 0.15s;
+    }
 
-/* ═══════════════════════════════════════ SIGNATURE PAD ═══════════════════════════════════════ */
-.sig-tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--gray-100); padding: 4px; border-radius: var(--radius); }
-.sig-tab {
-  flex: 1; padding: 9px; border: none;
-  background: transparent; border-radius: 8px;
-  font-family: var(--font); font-size: 13px; font-weight: 600;
-  color: var(--gray-500); cursor: pointer; transition: var(--transition);
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-}
-.sig-tab.active { background: white; color: var(--forest-main); box-shadow: var(--shadow-sm); }
+    .stat-card:hover { transform: translateY(-2px); }
 
-.sig-panel { display: none; }
-.sig-panel.active { display: block; }
+    .stat-icon {
+      width: 48px; height: 48px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
 
-#sigCanvas {
-  width: 100%; height: 200px;
-  border: 2px dashed var(--gray-300);
-  border-radius: var(--radius);
-  cursor: crosshair;
-  background: white;
-  display: block;
-  touch-action: none;
-}
-#sigCanvas:focus { border-color: var(--forest-main); }
+    .stat-icon.green { background: var(--forest-pale); }
+    .stat-icon.gold  { background: #fef3c7; }
+    .stat-icon.red   { background: #fef2f2; }
+    .stat-icon.blue  { background: #eff6ff; }
 
-.sig-type-input {
-  width: 100%; padding: 16px;
-  border: 2px solid var(--gray-200);
-  border-radius: var(--radius);
-  font-size: 28px;
-  font-family: 'Dancing Script', cursive, var(--font);
-  color: var(--forest-dark);
-  outline: none;
-  text-align: center;
-  transition: var(--transition);
-}
-.sig-type-input:focus { border-color: var(--forest-main); }
+    .stat-num {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 28px; font-weight: 700;
+      color: var(--forest-dark);
+      line-height: 1;
+    }
 
-.upload-zone {
-  border: 2px dashed var(--gray-300);
-  border-radius: var(--radius);
-  padding: 40px 24px;
-  text-align: center;
-  cursor: pointer;
-  transition: var(--transition);
-  background: var(--gray-50);
-}
-.upload-zone:hover { border-color: var(--forest-main); background: var(--forest-fog); }
-.upload-zone i { font-size: 36px; color: var(--gray-400); margin-bottom: 12px; display: block; }
-.upload-zone p { color: var(--gray-500); font-size: 14px; }
-.upload-zone strong { color: var(--forest-main); }
+    .stat-label { font-size: 12px; color: var(--text-light); margin-top: 3px; }
 
-.sig-controls {
-  display: flex; gap: 8px; margin-top: 12px;
-  align-items: center;
-}
-.sig-color {
-  width: 28px; height: 28px;
-  border-radius: 50%; border: 3px solid white;
-  cursor: pointer; transition: var(--transition);
-  box-shadow: 0 0 0 2px var(--gray-300);
-}
-.sig-color:hover, .sig-color.active { box-shadow: 0 0 0 2px var(--forest-main); }
+    /* ─── FORM CARD ─── */
+    .form-card {
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
 
-/* ═══════════════════════════════════════ TIMELINE ═══════════════════════════════════════ */
-.timeline { position: relative; padding-left: 28px; }
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 9px; top: 0; bottom: 0;
-  width: 2px;
-  background: linear-gradient(180deg, var(--forest-main), var(--forest-mist));
-}
-.timeline-item { position: relative; margin-bottom: 24px; }
-.timeline-dot {
-  position: absolute;
-  left: -24px; top: 2px;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  border: 3px solid white;
-  box-shadow: 0 0 0 2px var(--forest-main);
-  background: var(--forest-main);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 8px; color: white;
-}
-.timeline-dot.pending { background: var(--amber); box-shadow-color: var(--amber); }
-.timeline-dot.rejected { background: var(--red); box-shadow-color: var(--red); }
-.timeline-content {
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-}
-.timeline-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.timeline-user { font-weight: 700; font-size: 14px; color: var(--gray-800); }
-.timeline-date { font-size: 12px; color: var(--gray-500); }
-.timeline-action { font-size: 13px; color: var(--gray-600); }
-.timeline-sig-preview {
-  margin-top: 10px;
-  padding: 8px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid var(--gray-200);
-  text-align: center;
-}
-.timeline-sig-preview img { max-height: 60px; max-width: 200px; }
+    .form-card-header {
+      background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest-mid) 100%);
+      padding: 18px 28px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 3px solid var(--gold);
+    }
 
-/* ═══════════════════════════════════════ UPLOAD AREA ═══════════════════════════════════════ */
-.doc-upload-zone {
-  border: 2px dashed var(--forest-mist);
-  border-radius: var(--radius-lg);
-  padding: 48px 24px;
-  text-align: center;
-  cursor: pointer;
-  transition: var(--transition);
-  background: var(--forest-fog);
-  position: relative;
-}
-.doc-upload-zone:hover {
-  border-color: var(--forest-main);
-  background: var(--forest-snow);
-}
-.doc-upload-zone.drag { border-color: var(--forest-main); background: var(--forest-snow); }
-.doc-upload-icon {
-  width: 72px; height: 72px;
-  background: var(--forest-snow);
-  border-radius: 20px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 32px; color: var(--forest-main);
-  margin: 0 auto 20px;
-  border: 2px solid var(--forest-mist);
-}
-.doc-upload-zone h3 { font-size: 18px; font-weight: 700; color: var(--forest-dark); margin-bottom: 8px; }
-.doc-upload-zone p { color: var(--gray-500); font-size: 14px; }
-.doc-upload-zone span { color: var(--forest-main); font-weight: 600; }
+    .form-card-header h2 {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 16px; font-weight: 700;
+      color: var(--white);
+    }
 
-/* ═══════════════════════════════════════ SIGNER FLOW ═══════════════════════════════════════ */
-.signer-order { margin-top: 16px; }
-.signer-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px;
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius);
-  margin-bottom: 8px;
-  cursor: grab;
-  transition: var(--transition);
-}
-.signer-item:hover { border-color: var(--forest-light); background: var(--forest-fog); }
-.signer-num {
-  width: 28px; height: 28px;
-  background: var(--forest-main);
-  color: white;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; flex-shrink: 0;
-}
-.signer-info { flex: 1; }
-.signer-name { font-weight: 600; font-size: 14px; }
-.signer-role { font-size: 12px; color: var(--gray-500); }
-.signer-drag { color: var(--gray-400); cursor: grab; }
+    .form-card-header .header-icon { font-size: 20px; }
 
-/* ═══════════════════════════════════════ CHARTS ═══════════════════════════════════════ */
-.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.chart-wrap { position: relative; height: 260px; }
+    .form-body { padding: 28px; }
 
-/* ═══════════════════════════════════════ QR CODE ═══════════════════════════════════════ */
-.qr-wrap {
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-  padding: 20px;
-  background: var(--gray-50);
-  border-radius: var(--radius);
-  border: 1px solid var(--gray-200);
-}
-.qr-wrap p { font-size: 12px; color: var(--gray-500); text-align: center; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
 
-/* ═══════════════════════════════════════ NOTIFICATION BANNER ═══════════════════════════════════════ */
-.notif-banner {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 20px;
-  border-radius: var(--radius);
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-.notif-banner.green { background: var(--forest-snow); color: var(--forest-dark); border-left: 4px solid var(--forest-main); }
-.notif-banner.amber { background: #fef9c3; color: #78350f; border-left: 4px solid var(--amber); }
+    .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .form-grid.full  { grid-template-columns: 1fr; }
 
-/* ═══════════════════════════════════════ FORM STYLES ═══════════════════════════════════════ */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.form-full { grid-column: 1 / -1; }
-.label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 7px; }
-.input, .select, .textarea {
-  width: 100%;
-  padding: 11px 14px;
-  border: 2px solid var(--gray-200);
-  border-radius: var(--radius);
-  font-family: var(--font); font-size: 14px;
-  color: var(--gray-800);
-  background: var(--gray-50);
-  outline: none; transition: var(--transition);
-}
-.input:focus, .select:focus, .textarea:focus {
-  border-color: var(--forest-main);
-  background: white;
-  box-shadow: 0 0 0 3px rgba(64,145,108,0.1);
-}
-.textarea { resize: vertical; min-height: 80px; }
-.select { cursor: pointer; appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.span2 { grid-column: span 2; }
+    .form-group.span3 { grid-column: span 3; }
 
-/* ═══════════════════════════════════════ EMPTY STATE ═══════════════════════════════════════ */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--gray-400);
-}
-.empty-state i { font-size: 52px; margin-bottom: 16px; display: block; color: var(--forest-mist); }
-.empty-state h3 { font-size: 18px; font-weight: 700; color: var(--gray-600); margin-bottom: 8px; }
-.empty-state p { font-size: 14px; }
+    .form-label {
+      font-size: 13px; font-weight: 600;
+      color: var(--text-mid);
+    }
 
-/* ═══════════════════════════════════════ PAGES ═══════════════════════════════════════ */
-.page { display: none; }
-.page.active { display: block; }
+    .form-label .req { color: var(--danger); }
 
-/* ═══════════════════════════════════════ SIGN REQUEST ═══════════════════════════════════════ */
-.doc-preview {
-  background: var(--gray-800);
-  border-radius: var(--radius);
-  padding: 24px;
-  text-align: center;
-  min-height: 200px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-}
-.doc-preview-inner {
-  background: white;
-  border-radius: 8px;
-  width: 100%; max-width: 400px;
-  min-height: 280px;
-  padding: 32px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-  text-align: left;
-}
-.doc-preview-logo {
-  display: flex; align-items: center; gap: 10px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--forest-main);
-  margin-bottom: 16px;
-}
-.doc-preview-logo span { font-size: 11px; color: var(--forest-dark); font-weight: 700; }
-.doc-preview-title { font-family: var(--font-serif); font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 12px; }
-.doc-preview-body { font-size: 11px; color: var(--gray-600); line-height: 2; }
-.doc-preview-sig-area {
-  margin-top: 20px;
-  border-top: 1px dashed var(--gray-300);
-  padding-top: 10px;
-  font-size: 10px; color: var(--gray-400);
-}
+    .form-input, .form-select, .form-textarea {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 14px;
+      color: var(--text-dark);
+      background: var(--white);
+      transition: all 0.18s;
+      outline: none;
+    }
 
-/* ═══════════════════════════════════════ PROGRESS ═══════════════════════════════════════ */
-.progress-bar {
-  height: 8px;
-  background: var(--gray-200);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--forest-main), var(--forest-light));
-  border-radius: 4px;
-  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--forest-light);
+      box-shadow: 0 0 0 3px rgba(61,107,61,0.1);
+    }
 
-/* ═══════════════════════════════════════ RESPONSIVE ═══════════════════════════════════════ */
-@media (max-width: 900px) {
-  .login-left { display: none; }
-  .login-right { width: 100%; }
-  .sidebar { transform: translateX(-100%); }
-  .main-content { margin-left: 0; }
-  .stat-grid { grid-template-columns: 1fr 1fr; }
-  .charts-grid { grid-template-columns: 1fr; }
-  .form-grid { grid-template-columns: 1fr; }
-}
+    .form-textarea { resize: vertical; min-height: 80px; }
 
-/* ═══════════════════════════════════════ LOADER ═══════════════════════════════════════ */
-.loader {
-  display: inline-block; width: 20px; height: 20px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+    /* Speed level badges */
+    .speed-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
 
-.page-loader {
-  position: fixed; inset: 0;
-  background: white;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 9999;
-  gap: 20px;
-}
-.page-loader .spinner {
-  width: 48px; height: 48px;
-  border: 4px solid var(--forest-snow);
-  border-top-color: var(--forest-main);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
+    .speed-btn {
+      padding: 8px 4px;
+      border-radius: 7px;
+      border: 2px solid transparent;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 11px; font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      background: #f8fafc;
+      color: #64748b;
+    }
 
-/* DataTables overrides */
-.dataTables_wrapper .dataTables_filter input {
-  border: 2px solid var(--gray-200); border-radius: var(--radius);
-  padding: 7px 12px; font-family: var(--font); outline: none;
-}
-.dataTables_wrapper .dataTables_filter input:focus { border-color: var(--forest-main); }
-.dataTables_wrapper .dataTables_length select {
-  border: 2px solid var(--gray-200); border-radius: var(--radius);
-  padding: 5px 8px; font-family: var(--font); outline: none;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-  border-radius: 8px !important; border: none !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button.current {
-  background: var(--forest-main) !important; color: white !important;
-}
-</style>
+    .speed-btn:hover { transform: translateY(-1px); }
+
+    .speed-btn.selected { border-width: 2px; }
+
+    .speed-normal   { }
+    .speed-duan     { background: #eff6ff; color: var(--urgent-1); }
+    .speed-duan-mak { background: #fff7ed; color: var(--urgent-2); }
+    .speed-duan-sud { background: #fef2f2; color: var(--urgent-3); }
+    .speed-lab      { background: #f5f3ff; color: var(--secret-1); }
+    .speed-lab-mak  { background: #fdf2f8; color: var(--secret-2); }
+    .speed-lab-sud  { background: #eef2ff; color: var(--secret-3); }
+
+    .speed-btn.selected.speed-normal   { border-color: #94a3b8; background: #f1f5f9; }
+    .speed-btn.selected.speed-duan     { border-color: var(--urgent-1); background: #dbeafe; }
+    .speed-btn.selected.speed-duan-mak { border-color: var(--urgent-2); background: #fed7aa; }
+    .speed-btn.selected.speed-duan-sud { border-color: var(--urgent-3); background: #fecaca; }
+    .speed-btn.selected.speed-lab      { border-color: var(--secret-1); background: #ede9fe; }
+    .speed-btn.selected.speed-lab-mak  { border-color: var(--secret-2); background: #fce7f3; }
+    .speed-btn.selected.speed-lab-sud  { border-color: var(--secret-3); background: #c7d2fe; color: #fff; }
+
+    /* Department combo */
+    .dept-combo { display: flex; gap: 8px; }
+    .dept-combo .form-select { flex: 1; }
+    .dept-combo .form-input  { flex: 1; }
+
+    .btn-add-custom {
+      padding: 10px 14px;
+      background: var(--forest-pale);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-mid);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .btn-add-custom:hover { background: var(--forest-mid); color: var(--white); border-color: var(--forest-mid); }
+
+    /* Section divider */
+    .section-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0 20px;
+      grid-column: 1 / -1;
+    }
+
+    .section-divider span {
+      font-size: 12px; font-weight: 700;
+      color: var(--forest-mid);
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .section-divider::before, .section-divider::after {
+      content: ''; flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Action buttons */
+    .form-actions {
+      display: flex; gap: 12px;
+      justify-content: flex-end;
+      padding: 20px 28px;
+      border-top: 1px solid var(--border);
+      background: var(--forest-bg);
+    }
+
+    .btn {
+      padding: 11px 28px;
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      border: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--forest-mid), var(--forest-dark));
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(26,46,26,0.3);
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(26,46,26,0.4); }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--text-mid);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:hover { background: var(--forest-pale); }
+
+    .btn-supabase {
+      background: linear-gradient(135deg, #1a936f, #114b5f);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(26,147,111,0.3);
+    }
+
+    .btn-supabase:hover { transform: translateY(-1px); }
+
+    /* ─── TABLE ─── */
+    .table-card {
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-header h3 {
+      font-family: 'Noto Serif Thai', serif;
+      font-size: 15px; font-weight: 700;
+      color: var(--forest-dark);
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead { background: var(--forest-pale); }
+
+    th {
+      padding: 11px 14px;
+      text-align: left;
+      font-weight: 600; font-size: 12px;
+      color: var(--text-mid);
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #f0f4f0;
+      color: var(--text-dark);
+      vertical-align: middle;
+    }
+
+    tr:hover td { background: #f8fbf8; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-normal   { background: #f1f5f9; color: #475569; }
+    .badge-duan     { background: #dbeafe; color: #1d4ed8; }
+    .badge-duan-mak { background: #fed7aa; color: #c2410c; }
+    .badge-duan-sud { background: #fecaca; color: #991b1b; }
+    .badge-lab      { background: #ede9fe; color: #5b21b6; }
+    .badge-lab-mak  { background: #fce7f3; color: #9d174d; }
+    .badge-lab-sud  { background: #c7d2fe; color: #1e1b4b; }
+
+    .doc-num {
+      font-family: monospace;
+      font-size: 12px; font-weight: 700;
+      color: var(--forest-mid);
+      background: var(--forest-pale);
+      padding: 2px 8px; border-radius: 4px;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed; bottom: 30px; right: 30px;
+      background: var(--forest-dark);
+      color: var(--white);
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      border-left: 4px solid var(--gold);
+      z-index: 9999;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .toast.show { transform: translateX(0); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 32px;
+      max-width: 420px; width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      transform: scale(0.9);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.open .modal { transform: scale(1); }
+
+    .modal-icon { font-size: 48px; margin-bottom: 16px; }
+    .modal-title { font-family: 'Noto Serif Thai', serif; font-size: 20px; font-weight: 700; color: var(--forest-dark); margin-bottom: 8px; }
+    .modal-doc-num { font-size: 28px; font-weight: 800; color: var(--gold); font-family: monospace; letter-spacing: 2px; margin: 12px 0; }
+    .modal-sub { font-size: 14px; color: var(--text-light); margin-bottom: 24px; }
+    .modal-close { padding: 10px 32px; }
+
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+      .sidebar { transform: translateX(-260px); }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid.three { grid-template-columns: 1fr 1fr; }
+      .speed-grid { grid-template-columns: repeat(4, 1fr); }
+      .form-group.span2, .form-group.span3 { grid-column: span 1; }
+      .main { margin-left: 0; }
+    }
+
+    .running-num-display {
+      background: linear-gradient(135deg, var(--forest-pale), var(--cream));
+      border: 2px dashed var(--forest-light);
+      border-radius: 10px;
+      padding: 12px 20px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .running-num-display .label { font-size: 12px; color: var(--text-light); margin-bottom: 4px; }
+    .running-num-display .num { font-size: 24px; font-weight: 800; color: var(--forest-dark); font-family: monospace; }
+  </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN PAGE ═══ -->
-<div id="loginPage">
-  <div class="login-left">
-    <div class="login-brand">
-      <div class="login-logo-wrap">
-        <div class="login-logo-icon">🌲</div>
-        <div class="login-brand-text">
-          <h1>กรมป่าไม้<br>Royal Forest Department</h1>
-          <p>กระทรวงทรัพยากรธรรมชาติและสิ่งแวดล้อม</p>
-        </div>
-      </div>
-      <div class="login-headline">
-        ระบบเซ็น<span>เอกสาร</span><br>ออนไลน์
-      </div>
-      <p class="login-desc">
-        ระบบลายเซ็นดิจิทัลสำหรับราชการไทย<br>
-        ลดขั้นตอน เพิ่มความปลอดภัย รวดเร็ว และโปร่งใส
-      </p>
-      <div class="login-features">
-        <div class="login-feat"><div class="login-feat-icon">🔐</div>เข้ารหัสข้อมูลด้วยมาตรฐาน AES-256</div>
-        <div class="login-feat"><div class="login-feat-icon">📋</div>ติดตาม Timeline การเซ็นแบบ Real-time</div>
-        <div class="login-feat"><div class="login-feat-icon">📧</div>แจ้งเตือนอัตโนมัติทาง Email</div>
-        <div class="login-feat"><div class="login-feat-icon">📱</div>รองรับทุกอุปกรณ์ Mobile / Tablet / PC</div>
-        <div class="login-feat"><div class="login-feat-icon">🔍</div>ตรวจสอบความถูกต้องด้วย QR Code</div>
-      </div>
-    </div>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">🌲</div>
+    <div class="sidebar-title">สำนักจัดการทรัพยากรป่าไม้ที่ 4<br>(ตาก)</div>
+    <div class="sidebar-sub">ระบบลงรับหนังสือราชการ</div>
   </div>
-  <div class="login-right">
-    <div class="login-card">
-      <div class="login-card-header">
-        <div class="login-card-icon">🔑</div>
-        <h2>เข้าสู่ระบบ</h2>
-        <p>กรุณาใช้บัญชีผู้ใช้ที่ได้รับอนุญาต</p>
-      </div>
-      <div class="form-group">
-        <label class="form-label">ชื่อผู้ใช้ (Username)</label>
-        <div class="form-input-wrap">
-          <i class="fa fa-user form-input-icon"></i>
-          <input type="text" id="loginUser" class="form-input" placeholder="กรอก Username" autocomplete="off">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">รหัสผ่าน (Password)</label>
-        <div class="form-input-wrap">
-          <i class="fa fa-lock form-input-icon"></i>
-          <input type="password" id="loginPass" class="form-input" placeholder="กรอก Password">
-        </div>
-      </div>
-      <button class="btn-login" id="loginBtn" onclick="doLogin()">
-        <i class="fa fa-sign-in-alt"></i>
-        เข้าสู่ระบบ
-      </button>
-      <div class="login-divider"><span>หรือใช้บัญชีสาธิต</span></div>
-      <div class="demo-accounts">
-        <button class="demo-btn" onclick="fillDemo('admin','admin123')">
-          <strong>👨‍💼 Admin</strong>
-          ผู้ดูแลระบบ
-        </button>
-        <button class="demo-btn" onclick="fillDemo('director','dir123')">
-          <strong>🌲 ผอ.สำนัก</strong>
-          ผู้อนุมัติ
-        </button>
-        <button class="demo-btn" onclick="fillDemo('officer','off123')">
-          <strong>📋 เจ้าหน้าที่</strong>
-          ผู้สร้างเอกสาร
-        </button>
-        <button class="demo-btn" onclick="fillDemo('deputy','dep123')">
-          <strong>🏛️ รักษาการ</strong>
-          ผู้เซ็นแทน
-        </button>
+  <nav class="sidebar-nav">
+    <div class="nav-label">เมนูหลัก</div>
+    <a class="nav-item active" onclick="showSection('dashboard')">
+      <span class="icon">📊</span> แดชบอร์ด
+    </a>
+    <a class="nav-item" onclick="showSection('register')">
+      <span class="icon">📥</span> ลงรับหนังสือ
+    </a>
+    <a class="nav-item" onclick="showSection('list')">
+      <span class="icon">📋</span> รายการหนังสือ
+    </a>
+    <div class="nav-label">ฐานข้อมูล</div>
+    <a class="nav-item" id="supabaseLink" href="#" target="_blank">
+      <span class="icon">🗄️</span> ดูข้อมูล 
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">👤</div>
+      <div>
+        <div class="user-name" id="sidebarUser">ผู้ดูแลระบบ</div>
+        <div class="user-role">เจ้าหน้าที่ระบบ</div>
       </div>
     </div>
+    <button class="btn-logout" onclick="doLogout()">
+      🚪 ออกจากระบบ
+    </button>
   </div>
-</div>
+</aside>
 
-<!-- ═══ MAIN APP ═══ -->
-<div id="mainApp">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="sidebar-brand-logo">
-        <div class="sidebar-brand-icon">🌲</div>
-        <div class="sidebar-brand-text">
-          <h2>RFD E-Sign</h2>
-          <p>ระบบเซ็นเอกสารออนไลน์</p>
-        </div>
-      </div>
+<!-- MAIN -->
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="pageTitle">แดชบอร์ด — ระบบลงรับหนังสือราชการ</div>
+    <div class="topbar-right">
+      <div class="date-badge" id="currentDate">—</div>
     </div>
-    <div class="sidebar-user">
-      <div class="sidebar-user-avatar" id="sidebarAvatar">A</div>
-      <div class="sidebar-user-name" id="sidebarName">ชื่อผู้ใช้</div>
-      <div class="sidebar-user-role">
-        <span class="role-badge" id="sidebarRole">Admin</span>
-        <span id="sidebarDept">กรมป่าไม้</span>
-      </div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="sidebar-section">เมนูหลัก</div>
-      <div class="nav-item active" onclick="showPage('dashboard')">
-        <i class="fa fa-chart-pie"></i> Dashboard
-      </div>
-      <div class="nav-item" onclick="showPage('documents')">
-        <i class="fa fa-file-alt"></i> เอกสารทั้งหมด
-        <span class="nav-badge" id="docBadge">3</span>
-      </div>
-      <div class="nav-item" onclick="showPage('pending')">
-        <i class="fa fa-clock"></i> รอเซ็น
-        <span class="nav-badge" id="pendingBadge">2</span>
-      </div>
-      <div class="nav-item" onclick="showPage('signed')">
-        <i class="fa fa-check-circle"></i> เซ็นแล้ว
-      </div>
-      <div class="sidebar-section">จัดการ</div>
-      <div class="nav-item" onclick="showPage('upload')" id="navUpload">
-        <i class="fa fa-upload"></i> อัปโหลดเอกสาร
-      </div>
-      <div class="nav-item" onclick="showPage('users')" id="navUsers">
-        <i class="fa fa-users"></i> จัดการผู้ใช้
-      </div>
-      <div class="nav-item" onclick="showPage('reports')" id="navReports">
-        <i class="fa fa-chart-bar"></i> รายงาน
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-logout" onclick="doLogout()">
-        <i class="fa fa-sign-out-alt"></i> ออกจากระบบ
-      </button>
-    </div>
-  </aside>
+  </header>
 
-  <!-- MAIN CONTENT -->
-  <div class="main-content">
-    <header class="topbar">
-      <div class="topbar-left">
-        <h1 id="pageTitle">Dashboard</h1>
-        <p id="pageSubtitle">ภาพรวมระบบเซ็นเอกสารออนไลน์</p>
-      </div>
-      <div class="topbar-right">
-        <button class="btn btn-secondary btn-sm" onclick="showPage('upload')">
-          <i class="fa fa-upload"></i> อัปโหลดเอกสาร
-        </button>
-        <button class="btn btn-primary btn-sm" onclick="openSignModal()">
-          <i class="fa fa-signature"></i> เซ็นเอกสาร
-        </button>
-      </div>
-    </header>
+  <div class="content">
 
-    <div class="page-content">
-
-      <!-- ═══ DASHBOARD PAGE ═══ -->
-      <div id="page-dashboard" class="page active">
-        <div id="pendingAlert" class="notif-banner amber" style="display:none">
-          <i class="fa fa-bell"></i>
-          <span>คุณมีเอกสารรอเซ็น <strong id="alertCount">0</strong> รายการ กรุณาดำเนินการให้แล้วเสร็จ</span>
-          <button class="btn btn-sm btn-warning" style="margin-left:auto" onclick="showPage('pending')">ดูเอกสาร</button>
-        </div>
-
-        <div class="stat-grid">
-          <div class="stat-card green">
-            <div class="stat-change up">↑ +12%</div>
-            <div class="stat-icon"><i class="fa fa-file-alt"></i></div>
-            <div class="stat-value" id="statTotal">0</div>
-            <div class="stat-label">เอกสารทั้งหมด</div>
-          </div>
-          <div class="stat-card amber">
-            <div class="stat-change up">↑ +3</div>
-            <div class="stat-icon"><i class="fa fa-clock"></i></div>
-            <div class="stat-value" id="statPending">0</div>
-            <div class="stat-label">รอเซ็น</div>
-          </div>
-          <div class="stat-card blue">
-            <div class="stat-change up">↑ +8</div>
-            <div class="stat-icon"><i class="fa fa-check-circle"></i></div>
-            <div class="stat-value" id="statSigned">0</div>
-            <div class="stat-label">เซ็นแล้ว</div>
-          </div>
-          <div class="stat-card red">
-            <div class="stat-change down">↓ -1</div>
-            <div class="stat-icon"><i class="fa fa-times-circle"></i></div>
-            <div class="stat-value" id="statRejected">0</div>
-            <div class="stat-label">ปฏิเสธ</div>
-          </div>
-        </div>
-
-        <div class="charts-grid" style="margin-bottom:24px">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-header-left">
-                <div class="card-header-icon green"><i class="fa fa-chart-pie"></i></div>
-                <div>
-                  <div class="card-title">สถานะเอกสาร</div>
-                  <div class="card-subtitle">ภาพรวมการเซ็นทั้งหมด</div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="chart-wrap"><canvas id="chartStatus"></canvas></div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header">
-              <div class="card-header-left">
-                <div class="card-header-icon blue"><i class="fa fa-chart-bar"></i></div>
-                <div>
-                  <div class="card-title">เอกสารรายเดือน</div>
-                  <div class="card-subtitle">6 เดือนล่าสุด</div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-left">
-              <div class="card-header-icon green"><i class="fa fa-history"></i></div>
-              <div>
-                <div class="card-title">เอกสารล่าสุด</div>
-                <div class="card-subtitle">รายการเอกสารที่อัปโหลดล่าสุด</div>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-wrap">
-              <table id="recentDocsTable" class="data-table">
-                <thead>
-                  <tr>
-                    <th>รหัส</th><th>ชื่อเอกสาร</th><th>ผู้สร้าง</th>
-                    <th>วันที่</th><th>สถานะ</th><th>ดำเนินการ</th>
-                  </tr>
-                </thead>
-                <tbody id="recentDocsTbody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ DOCUMENTS PAGE ═══ -->
-      <div id="page-documents" class="page">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-left">
-              <div class="card-header-icon green"><i class="fa fa-folder-open"></i></div>
-              <div>
-                <div class="card-title">เอกสารทั้งหมด</div>
-                <div class="card-subtitle">จัดการและติดตามเอกสาร</div>
-              </div>
-            </div>
-            <div style="display:flex;gap:8px">
-              <button class="btn btn-secondary btn-sm" onclick="exportAllPDF()">
-                <i class="fa fa-download"></i> Export PDF
-              </button>
-              <button class="btn btn-primary btn-sm" onclick="showPage('upload')">
-                <i class="fa fa-plus"></i> อัปโหลดใหม่
-              </button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-wrap">
-              <table id="docsTable" class="data-table">
-                <thead>
-                  <tr>
-                    <th>รหัส</th><th>ชื่อเอกสาร</th><th>ประเภท</th>
-                    <th>ผู้สร้าง</th><th>วันที่</th><th>สถานะ</th>
-                    <th>ความคืบหน้า</th><th>ดำเนินการ</th>
-                  </tr>
-                </thead>
-                <tbody id="docsTbody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ PENDING PAGE ═══ -->
-      <div id="page-pending" class="page">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-left">
-              <div class="card-header-icon gold"><i class="fa fa-pen-alt"></i></div>
-              <div>
-                <div class="card-title">เอกสารรอเซ็น</div>
-                <div class="card-subtitle">เอกสารที่รอลายเซ็นของคุณ</div>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div id="pendingList"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ SIGNED PAGE ═══ -->
-      <div id="page-signed" class="page">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-left">
-              <div class="card-header-icon green"><i class="fa fa-check-double"></i></div>
-              <div>
-                <div class="card-title">เอกสารที่เซ็นแล้ว</div>
-                <div class="card-subtitle">ประวัติการเซ็นเอกสาร</div>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-wrap">
-              <table id="signedTable" class="data-table">
-                <thead>
-                  <tr>
-                    <th>รหัส</th><th>ชื่อเอกสาร</th><th>ผู้สร้าง</th>
-                    <th>วันที่เซ็น</th><th>ประเภทลายเซ็น</th><th>ดำเนินการ</th>
-                  </tr>
-                </thead>
-                <tbody id="signedTbody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ UPLOAD PAGE ═══ -->
-      <div id="page-upload" class="page">
-        <div style="display:grid;grid-template-columns:1fr 380px;gap:24px">
+    <!-- ═══════════ DASHBOARD SECTION ═══════════ -->
+    <div id="sec-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon green">📅</div>
           <div>
-            <div class="card" style="margin-bottom:20px">
-              <div class="card-header">
-                <div class="card-header-left">
-                  <div class="card-header-icon green"><i class="fa fa-cloud-upload-alt"></i></div>
-                  <div>
-                    <div class="card-title">อัปโหลดเอกสาร</div>
-                    <div class="card-subtitle">รองรับไฟล์ PDF และรูปภาพ</div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="doc-upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                  <div class="doc-upload-icon">📁</div>
-                  <h3>คลิกหรือลากไฟล์มาวางที่นี่</h3>
-                  <p>รองรับ <span>PDF, PNG, JPG, JPEG</span> ขนาดไม่เกิน 10 MB</p>
-                  <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg" style="display:none" onchange="handleFileSelect(this)">
-                </div>
-                <div id="filePreview" style="display:none;margin-top:20px">
-                  <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--forest-fog);border-radius:var(--radius);border:1px solid var(--forest-mist)">
-                    <div style="font-size:32px" id="fileIcon">📄</div>
-                    <div style="flex:1">
-                      <div style="font-weight:700;color:var(--forest-dark)" id="fileName">-</div>
-                      <div style="font-size:12px;color:var(--gray-500)" id="fileSize">-</div>
-                    </div>
-                    <button class="btn btn-secondary btn-sm" onclick="clearFile()"><i class="fa fa-times"></i></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-header">
-                <div class="card-header-left">
-                  <div class="card-header-icon blue"><i class="fa fa-info-circle"></i></div>
-                  <div><div class="card-title">ข้อมูลเอกสาร</div></div>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="form-grid">
-                  <div class="form-full">
-                    <label class="label">ชื่อเอกสาร *</label>
-                    <input class="input" id="docTitle" placeholder="ระบุชื่อเอกสาร">
-                  </div>
-                  <div>
-                    <label class="label">ประเภทเอกสาร</label>
-                    <select class="select" id="docType">
-                      <option value="หนังสือราชการ">หนังสือราชการ</option>
-                      <option value="บันทึกข้อความ">บันทึกข้อความ</option>
-                      <option value="คำสั่ง">คำสั่ง</option>
-                      <option value="ประกาศ">ประกาศ</option>
-                      <option value="สัญญา">สัญญา</option>
-                      <option value="รายงาน">รายงาน</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="label">ความเร่งด่วน</label>
-                    <select class="select" id="docUrgency">
-                      <option value="ปกติ">ปกติ</option>
-                      <option value="ด่วน">ด่วน</option>
-                      <option value="ด่วนที่สุด">ด่วนที่สุด</option>
-                    </select>
-                  </div>
-                  <div class="form-full">
-                    <label class="label">หมายเหตุ</label>
-                    <textarea class="textarea" id="docNote" placeholder="ระบุหมายเหตุ (ถ้ามี)"></textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div class="stat-num" id="countToday">0</div>
+            <div class="stat-label">หนังสือที่ลงรับวันนี้</div>
           </div>
-
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold">📑</div>
           <div>
-            <div class="card" style="margin-bottom:20px">
-              <div class="card-header">
-                <div class="card-header-left">
-                  <div class="card-header-icon gold"><i class="fa fa-users"></i></div>
-                  <div>
-                    <div class="card-title">กำหนดผู้เซ็น</div>
-                    <div class="card-subtitle">ลากเพื่อเรียงลำดับ</div>
-                  </div>
-                </div>
+            <div class="stat-num" id="countTotal">0</div>
+            <div class="stat-label">หนังสือทั้งหมด (ปีนี้)</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">⚡</div>
+          <div>
+            <div class="stat-num" id="countUrgent">0</div>
+            <div class="stat-label">หนังสือด่วน/ลับ</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">🔢</div>
+          <div>
+            <div class="stat-num" id="nextRunning">—</div>
+            <div class="stat-label">เลขรับลำดับถัดไป</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent table -->
+      <div class="table-card">
+        <div class="table-header">
+          <h3>📋 รายการหนังสือล่าสุด (10 รายการ)</h3>
+          <button class="btn btn-secondary" style="font-size:13px;padding:8px 16px" onclick="refreshTable()">🔄 รีเฟรช</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>เลขรับ</th>
+                <th>วันที่ลงรับ</th>
+                <th>เลขที่หนังสือ</th>
+                <th>ชั้นความเร็ว</th>
+                <th>หัวข้อเรื่อง</th>
+                <th>หน่วยงาน</th>
+                <th>ผู้ลงนาม</th>
+              </tr>
+            </thead>
+            <tbody id="recentTable">
+              <tr><td colspan="7" style="text-align:center;color:#aaa;padding:32px">ยังไม่มีข้อมูล</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ REGISTER SECTION ═══════════ -->
+    <div id="sec-register" style="display:none">
+
+      <div class="running-num-display">
+        <div class="label">เลขรับที่จะออกให้</div>
+        <div class="num" id="previewRunning">กำลังโหลด...</div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-header">
+          <span class="header-icon">📥</span>
+          <h2>บันทึกลงรับหนังสือราชการ</h2>
+        </div>
+        <div class="form-body">
+          <div class="form-grid three">
+
+            <!-- ── ส่วนที่ 1: ข้อมูลหนังสือ ── -->
+            <div class="section-divider span3"><span>📄 ข้อมูลหนังสือ</span></div>
+
+            <div class="form-group">
+              <label class="form-label">หนังสือลงวันที่ <span class="req">*</span></label>
+              <input type="date" id="f_date" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">เวลาที่รับ <span class="req">*</span></label>
+              <input type="time" id="f_time" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">เลขที่หนังสือต้นทาง <span class="req">*</span></label>
+              <input type="text" id="f_docno" class="form-input" placeholder="เช่น ทส 1617.01/" />
+            </div>
+
+            <!-- ── ชั้นความเร็ว ── -->
+            <div class="form-group span3">
+              <label class="form-label">ชั้นความเร็ว / ชั้นความลับ <span class="req">*</span></label>
+              <div class="speed-grid">
+                <button type="button" class="speed-btn speed-normal selected" data-val="ปกติ" onclick="selectSpeed(this)">ปกติ</button>
+                <button type="button" class="speed-btn speed-duan" data-val="ด่วน" onclick="selectSpeed(this)">ด่วน</button>
+                <button type="button" class="speed-btn speed-duan-mak" data-val="ด่วนมาก" onclick="selectSpeed(this)">ด่วนมาก</button>
+                <button type="button" class="speed-btn speed-duan-sud" data-val="ด่วนที่สุด" onclick="selectSpeed(this)">ด่วนที่สุด</button>
+                <button type="button" class="speed-btn speed-lab" data-val="ลับ" onclick="selectSpeed(this)">ลับ</button>
+                <button type="button" class="speed-btn speed-lab-mak" data-val="ลับมาก" onclick="selectSpeed(this)">ลับมาก</button>
+                <button type="button" class="speed-btn speed-lab-sud" data-val="ลับที่สุด" onclick="selectSpeed(this)">ลับที่สุด</button>
               </div>
-              <div class="card-body">
-                <label class="label">เลือกผู้เซ็น</label>
-                <select class="select" id="signerSelect" onchange="addSigner(this.value)">
-                  <option value="">-- เลือกผู้เซ็น --</option>
+            </div>
+
+            <!-- ── หัวข้อเรื่อง ── -->
+            <div class="form-group span3">
+              <label class="form-label">หัวข้อเรื่อง <span class="req">*</span></label>
+              <textarea id="f_subject" class="form-textarea" rows="2" placeholder="กรอกหัวข้อเรื่องของหนังสือ..."></textarea>
+            </div>
+
+            <!-- ── ส่วนที่ 2: ผู้เกี่ยวข้อง ── -->
+            <div class="section-divider span3"><span>🏢 ผู้เกี่ยวข้อง</span></div>
+
+            <div class="form-group">
+              <label class="form-label">ผู้ลงนาม <span class="req">*</span></label>
+              <input type="text" id="f_signer" class="form-input" placeholder="ชื่อ-ตำแหน่งผู้ลงนาม" />
+            </div>
+
+            <div class="form-group span2">
+              <label class="form-label">หน่วยงานเจ้าของเรื่อง <span class="req">*</span></label>
+              <div class="dept-combo">
+                <select id="f_dept_select" class="form-select" style="flex:1" onchange="deptChange()">
+                  <option value="">— เลือกหน่วยงาน —</option>
+                  <option>ส่วนอำนวยการ</option>
+                  <option>ส่วนจัดการที่ดินป่าไม้</option>
+                  <option>ส่วนป้องกันรักษาป่าและควบคุมไฟป่า</option>
+                  <option>ส่วนจัดการป่าชุมชน</option>
+                  <option>ส่วนส่งเสริมการปลูกป่า</option>
+                  <option>ส่วนโครงการพระราชดำริและกิจการพิเศษ</option>
+                  <option>ส่วนการอนุญาต</option>
+                  <option>ศูนย์ป่าไม้ตาก</option>
+                  <option>ศูนย์ป่าไม้กำแพงเพชร</option>
+                  <option>ศูนย์ป่าไม้สุโขทัย</option>
+                  <option value="__custom__">➕ พิมพ์หน่วยงานอื่น...</option>
                 </select>
-                <div class="signer-order" id="signerOrder"></div>
+                <input type="text" id="f_dept_custom" class="form-input" placeholder="ระบุหน่วยงาน..." style="flex:1;display:none" />
               </div>
             </div>
 
-            <div class="card">
-              <div class="card-body">
-                <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px" onclick="submitDocument()">
-                  <i class="fa fa-paper-plane"></i> ส่งเอกสารเพื่อเซ็น
-                </button>
-                <button class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:10px" onclick="saveDraft()">
-                  <i class="fa fa-save"></i> บันทึกร่าง
-                </button>
+            <div class="form-group">
+              <label class="form-label">เจ้าหน้าที่ผู้รับเรื่อง <span class="req">*</span></label>
+              <input type="text" id="f_receiver" class="form-input" placeholder="ชื่อเจ้าหน้าที่" />
+            </div>
+
+            <div class="form-group span2">
+              <label class="form-label">ถึง (ผู้รับหนังสือ) <span class="req">*</span></label>
+              <div style="display:flex;gap:8px">
+                <select id="f_to_select" class="form-select" style="flex:1" onchange="toChange()">
+                  <option value="ผู้อำนวยการสำนักจัดการทรัพยากรป่าไม้ที่ 4 ตาก">ผู้อำนวยการสำนักจัดการทรัพยากรป่าไม้ที่ 4 ตาก</option>
+                  <option value="__custom__">➕ ระบุเพิ่มเติม...</option>
+                </select>
+                <input type="text" id="f_to_custom" class="form-input" placeholder="ระบุผู้รับ..." style="flex:1;display:none" />
               </div>
             </div>
+
+            <!-- ── หมายเหตุ ── -->
+            <div class="form-group span3">
+              <label class="form-label">หมายเหตุ (ถ้ามี)</label>
+              <input type="text" id="f_remark" class="form-input" placeholder="หมายเหตุเพิ่มเติม..." />
+            </div>
+
           </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="clearForm()">🗑️ ล้างข้อมูล</button>
+          <a id="btnSupabase" href="#" target="_blank" class="btn btn-supabase" style="text-decoration:none">🗄️ ดูข้อมูลใน Supabase</a>
+          <button class="btn btn-primary" onclick="saveDocument()">💾 บันทึกและออกเลขรับ</button>
         </div>
       </div>
+    </div>
 
-      <!-- ═══ USERS PAGE ═══ -->
-      <div id="page-users" class="page">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-left">
-              <div class="card-header-icon blue"><i class="fa fa-user-cog"></i></div>
-              <div>
-                <div class="card-title">จัดการผู้ใช้งาน</div>
-                <div class="card-subtitle">ผู้ใช้ที่มีสิทธิ์เซ็นเอกสาร</div>
-              </div>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="openAddUser()">
-              <i class="fa fa-plus"></i> เพิ่มผู้ใช้
-            </button>
+    <!-- ═══════════ LIST SECTION ═══════════ -->
+    <div id="sec-list" style="display:none">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>📋 รายการหนังสือทั้งหมด</h3>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="searchInput" class="form-input" style="width:220px;font-size:13px;padding:8px 12px" placeholder="🔍 ค้นหา..." oninput="filterTable()" />
+            <button class="btn btn-secondary" style="font-size:13px;padding:8px 16px" onclick="refreshTable()">🔄 รีเฟรช</button>
           </div>
-          <div class="card-body">
-            <div class="table-wrap">
-              <table id="usersTable" class="data-table">
-                <thead>
-                  <tr>
-                    <th>รหัส</th><th>ชื่อ-สกุล</th><th>Username</th>
-                    <th>ตำแหน่ง</th><th>สิทธิ์</th><th>สถานะ</th><th>ดำเนินการ</th>
-                  </tr>
-                </thead>
-                <tbody id="usersTbody"></tbody>
-              </table>
-            </div>
-          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>เลขรับ</th>
+                <th>วันที่ลงรับ</th>
+                <th>เวลา</th>
+                <th>เลขที่หนังสือ</th>
+                <th>ชั้นความเร็ว</th>
+                <th>หัวข้อเรื่อง</th>
+                <th>หน่วยงาน</th>
+                <th>ผู้ลงนาม</th>
+                <th>เจ้าหน้าที่รับ</th>
+                <th>ถึง</th>
+              </tr>
+            </thead>
+            <tbody id="allTable">
+              <tr><td colspan="10" style="text-align:center;color:#aaa;padding:32px">กำลังโหลด...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <!-- ═══ REPORTS PAGE ═══ -->
-      <div id="page-reports" class="page">
-        <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
-          <div class="stat-card green">
-            <div class="stat-icon"><i class="fa fa-percentage"></i></div>
-            <div class="stat-value" id="repRate">0%</div>
-            <div class="stat-label">อัตราการเซ็นสำเร็จ</div>
-          </div>
-          <div class="stat-card blue">
-            <div class="stat-icon"><i class="fa fa-hourglass-half"></i></div>
-            <div class="stat-value" id="repAvgTime">0</div>
-            <div class="stat-label">เวลาเฉลี่ยการเซ็น (ชม.)</div>
-          </div>
-          <div class="stat-card gold">
-            <div class="stat-icon"><i class="fa fa-star"></i></div>
-            <div class="stat-value" id="repMostSigner">-</div>
-            <div class="stat-label">ผู้เซ็นมากที่สุด</div>
-          </div>
-        </div>
-        <div class="charts-grid">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-header-left">
-                <div class="card-header-icon green"><i class="fa fa-chart-line"></i></div>
-                <div><div class="card-title">แนวโน้มการเซ็นเอกสาร</div></div>
-              </div>
-            </div>
-            <div class="card-body"><div class="chart-wrap"><canvas id="chartTrend"></canvas></div></div>
-          </div>
-          <div class="card">
-            <div class="card-header">
-              <div class="card-header-left">
-                <div class="card-header-icon gold"><i class="fa fa-chart-bar"></i></div>
-                <div><div class="card-title">ประเภทเอกสาร</div></div>
-              </div>
-            </div>
-            <div class="card-body"><div class="chart-wrap"><canvas id="chartDocType"></canvas></div></div>
-          </div>
-        </div>
-      </div>
+  </div>
+</main>
 
-    </div><!-- end page-content -->
-  </div><!-- end main-content -->
-</div><!-- end mainApp -->
-
-<!-- ═══ MODALS ═══ -->
-
-<!-- Sign Modal -->
-<div id="signModal" class="modal-overlay">
+<!-- MODAL -->
+<div class="modal-overlay" id="successModal">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">
-        <div class="modal-title-icon">✍️</div>
-        เซ็นเอกสาร
-      </div>
-      <button class="modal-close" onclick="closeModal('signModal')"><i class="fa fa-times"></i></button>
-    </div>
-    <div class="modal-body">
-      <div id="signDocInfo" style="padding:14px;background:var(--forest-fog);border-radius:var(--radius);border-left:4px solid var(--forest-main);margin-bottom:20px">
-        <div style="font-weight:700;color:var(--forest-dark);font-size:15px" id="signDocTitle">ชื่อเอกสาร</div>
-        <div style="font-size:12px;color:var(--gray-500);margin-top:4px" id="signDocMeta">สร้างโดย: - | วันที่: -</div>
-      </div>
-
-      <div class="sig-tabs">
-        <button class="sig-tab active" onclick="switchSigTab('draw',this)">
-          <i class="fa fa-pen"></i> วาดลายเซ็น
-        </button>
-        <button class="sig-tab" onclick="switchSigTab('type',this)">
-          <i class="fa fa-keyboard"></i> พิมพ์ชื่อ
-        </button>
-        <button class="sig-tab" onclick="switchSigTab('upload',this)">
-          <i class="fa fa-upload"></i> อัปโหลด
-        </button>
-      </div>
-
-      <div id="sigDraw" class="sig-panel active">
-        <canvas id="sigCanvas"></canvas>
-        <div class="sig-controls">
-          <span style="font-size:12px;color:var(--gray-500)">สี:</span>
-          <div class="sig-color active" style="background:#1a4731" onclick="setSigColor('#1a4731',this)"></div>
-          <div class="sig-color" style="background:#1e3a8a" onclick="setSigColor('#1e3a8a',this)"></div>
-          <div class="sig-color" style="background:#111827" onclick="setSigColor('#111827',this)"></div>
-          <div class="sig-color" style="background:#7c3aed" onclick="setSigColor('#7c3aed',this)"></div>
-          <div class="sig-controls" style="margin-left:auto;gap:6px">
-            <button class="btn btn-secondary btn-sm" onclick="clearSig()"><i class="fa fa-eraser"></i> ลบ</button>
-            <button class="btn btn-secondary btn-sm" onclick="undoSig()"><i class="fa fa-undo"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div id="sigType" class="sig-panel">
-        <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-        <input class="sig-type-input" id="sigTypeInput" placeholder="พิมพ์ชื่อ-สกุลของคุณ" style="font-family:'Dancing Script',cursive">
-        <div style="margin-top:12px;font-size:12px;color:var(--gray-500)">
-          <i class="fa fa-info-circle"></i> ระบบจะแปลงข้อความเป็นลายเซ็น
-        </div>
-      </div>
-
-      <div id="sigUpload" class="sig-panel">
-        <div class="upload-zone" onclick="document.getElementById('sigFileInput').click()">
-          <i class="fa fa-image"></i>
-          <p>คลิกเพื่ออัปโหลดลายเซ็น<br><strong>PNG หรือ JPG พื้นหลังโปร่งใส</strong></p>
-          <input type="file" id="sigFileInput" accept=".png,.jpg,.jpeg" style="display:none" onchange="loadSigImage(this)">
-        </div>
-        <div id="sigUploadPreview" style="margin-top:12px;text-align:center;display:none">
-          <img id="sigUploadImg" style="max-height:100px;border:1px solid var(--gray-200);border-radius:8px;padding:8px">
-        </div>
-      </div>
-
-      <div style="margin-top:20px;padding:14px;background:var(--gray-50);border-radius:var(--radius)">
-        <div style="font-size:12px;color:var(--gray-600);margin-bottom:8px;font-weight:600">
-          <i class="fa fa-calendar-alt" style="color:var(--forest-main)"></i> วันที่และเวลาอัตโนมัติ
-        </div>
-        <div id="signDateTime" style="font-size:14px;font-weight:700;color:var(--forest-dark)"></div>
-      </div>
-
-      <div style="margin-top:16px">
-        <label class="label">หมายเหตุการเซ็น (ถ้ามี)</label>
-        <textarea class="textarea" id="signNote" placeholder="ระบุหมายเหตุ" rows="2"></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-danger" onclick="rejectDoc()">
-        <i class="fa fa-times-circle"></i> ปฏิเสธ
-      </button>
-      <button class="btn btn-secondary" onclick="closeModal('signModal')">ยกเลิก</button>
-      <button class="btn btn-primary" onclick="confirmSign()">
-        <i class="fa fa-check"></i> ยืนยันลายเซ็น
-      </button>
-    </div>
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">บันทึกสำเร็จ!</div>
+    <div class="modal-doc-num" id="modalDocNum">สจป.4/2548</div>
+    <div class="modal-sub" id="modalSub">เลขรับหนังสือที่ออกให้</div>
+    <button class="btn btn-primary modal-close" onclick="closeModal()">ตกลง</button>
   </div>
 </div>
 
-<!-- Document Detail Modal -->
-<div id="detailModal" class="modal-overlay">
-  <div class="modal modal-lg">
-    <div class="modal-header">
-      <div class="modal-title">
-        <div class="modal-title-icon">📋</div>
-        รายละเอียดเอกสาร
-      </div>
-      <button class="modal-close" onclick="closeModal('detailModal')"><i class="fa fa-times"></i></button>
-    </div>
-    <div class="modal-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-        <div>
-          <div class="doc-preview">
-            <div class="doc-preview-inner">
-              <div class="doc-preview-logo">
-                <span style="font-size:20px">🌲</span>
-                <span>กรมป่าไม้<br>Royal Forest Department</span>
-              </div>
-              <div class="doc-preview-title" id="detailDocTitle">ชื่อเอกสาร</div>
-              <div class="doc-preview-body">
-                เรื่อง: การดำเนินการตามระเบียบกรมป่าไม้<br>
-                เรียน: ผู้อำนวยการสำนักบริหาร<br><br>
-                ด้วยสำนักฯ ได้ดำเนินการจัดทำเอกสารนี้ขึ้นเพื่อรายงานความคืบหน้า
-                ตามโครงการฟื้นฟูป่าไม้ประจำปีงบประมาณ พ.ศ. ๒๕๖๘...
-              </div>
-              <div class="doc-preview-sig-area">
-                <div id="detailSigPreview"></div>
-                ลงชื่อ ............................<br>
-                ตำแหน่ง ............................
-              </div>
-            </div>
-          </div>
-          <div class="qr-wrap" style="margin-top:16px">
-            <div id="qrCode"></div>
-            <p>สแกน QR Code เพื่อตรวจสอบความถูกต้องของเอกสาร</p>
-          </div>
-        </div>
-        <div>
-          <div style="margin-bottom:20px">
-            <div style="font-size:13px;color:var(--gray-500);margin-bottom:4px">รหัสเอกสาร</div>
-            <div style="font-weight:700;font-size:16px;color:var(--forest-dark)" id="detailDocId">-</div>
-          </div>
-          <div style="margin-bottom:16px">
-            <div style="font-size:13px;color:var(--gray-500);margin-bottom:4px">สถานะ</div>
-            <div id="detailStatus"></div>
-          </div>
-          <div style="margin-bottom:16px">
-            <div style="font-size:13px;color:var(--gray-500);margin-bottom:4px">ความคืบหน้า</div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
-              <span>การเซ็นผ่านแล้ว</span>
-              <span id="detailProgress">0/0</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" id="detailProgressBar" style="width:0%"></div></div>
-          </div>
-          <div style="margin-bottom:24px">
-            <div style="font-weight:700;font-size:14px;color:var(--gray-700);margin-bottom:12px;display:flex;align-items:center;gap:8px">
-              <i class="fa fa-stream" style="color:var(--forest-main)"></i> Timeline การเซ็น
-            </div>
-            <div class="timeline" id="detailTimeline"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary btn-sm" onclick="exportDocPDF()">
-        <i class="fa fa-file-pdf"></i> Export PDF
-      </button>
-      <button class="btn btn-secondary" onclick="closeModal('detailModal')">ปิด</button>
-      <button class="btn btn-primary" id="detailSignBtn" onclick="openSignFromDetail()" style="display:none">
-        <i class="fa fa-signature"></i> เซ็นเอกสารนี้
-      </button>
-    </div>
-  </div>
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✅</span>
+  <span id="toastMsg">บันทึกสำเร็จ</span>
 </div>
 
-<!-- Add User Modal -->
-<div id="userModal" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">
-        <div class="modal-title-icon">👤</div>
-        เพิ่มผู้ใช้งาน
-      </div>
-      <button class="modal-close" onclick="closeModal('userModal')"><i class="fa fa-times"></i></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-grid">
-        <div class="form-full">
-          <label class="label">ชื่อ-สกุล *</label>
-          <input class="input" id="newUserName" placeholder="ระบุชื่อ-สกุล">
-        </div>
-        <div>
-          <label class="label">Username *</label>
-          <input class="input" id="newUsername" placeholder="ระบุ Username">
-        </div>
-        <div>
-          <label class="label">Password *</label>
-          <input type="password" class="input" id="newPassword" placeholder="ระบุ Password">
-        </div>
-        <div>
-          <label class="label">ตำแหน่ง</label>
-          <input class="input" id="newPosition" placeholder="ระบุตำแหน่ง">
-        </div>
-        <div>
-          <label class="label">สิทธิ์การใช้งาน</label>
-          <select class="select" id="newRole">
-            <option value="signer">ผู้เซ็น (Signer)</option>
-            <option value="admin">ผู้ดูแลระบบ (Admin)</option>
-            <option value="viewer">ผู้ดู (Viewer)</option>
-          </select>
-        </div>
-        <div>
-          <label class="label">Email</label>
-          <input class="input" id="newEmail" placeholder="ระบุ Email" type="email">
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('userModal')">ยกเลิก</button>
-      <button class="btn btn-primary" onclick="addUser()">
-        <i class="fa fa-plus"></i> เพิ่มผู้ใช้
-      </button>
-    </div>
-  </div>
-</div>
-
+<!-- ══════════════════════════════════════════════════════════
+     SUPABASE CONFIG — แก้ไข URL และ ANON KEY ของคุณที่นี่
+═══════════════════════════════════════════════════════════ -->
 <script>
-// ═══════════════════════════════════════════════════════════════════════
-// CONFIG — เปลี่ยน URL นี้หลัง Deploy Google Apps Script
-// ═══════════════════════════════════════════════════════════════════════
-const API_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+  // ══ 🔧 ตั้งค่า Supabase ══
+  const SUPABASE_URL  = 'https://eawskoljyynltsfrgpei.supabase.co';   // ← เปลี่ยน
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhd3Nrb2xqeXlubHRzZnJncGVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTUxNDYsImV4cCI6MjA5MjM3MTE0Nn0.sWFYviXzGWfx-5732wCEbzCh6XuBkkx8gJodKNFRns0';                       // ← เปลี่ยน
+  const TABLE_NAME    = 'documents';
+  const SUPABASE_TABLE_URL = `${SUPABASE_URL}/rest/v1/${TABLE_NAME}`;
 
-// ═══════════════════════════════════════════════════════════════════════
-// DEMO DATA (ใช้ระหว่างที่ยังไม่ได้ต่อ API)
-// ═══════════════════════════════════════════════════════════════════════
-const DEMO_USERS = [
-  { user_id:'U001', name:'นายสมชาย ป่าไม้', role:'admin', username:'admin', password:'admin123', position:'ผู้ดูแลระบบ', email:'admin@forest.go.th', active:true },
-  { user_id:'U002', name:'นายวิชัย รักษ์ป่า', role:'signer', username:'director', password:'dir123', position:'ผู้อำนวยการสำนัก', email:'director@forest.go.th', active:true },
-  { user_id:'U003', name:'นางสาวสุดา เขียวชอุ่ม', role:'signer', username:'officer', password:'off123', position:'เจ้าหน้าที่ป่าไม้', email:'officer@forest.go.th', active:true },
-  { user_id:'U004', name:'นายประเสริฐ รักษาการ', role:'signer', username:'deputy', password:'dep123', position:'รักษาการ ผอ.สำนัก', email:'deputy@forest.go.th', active:true },
-];
+  // ── Supabase link buttons ──
+  document.getElementById('supabaseLink').href = `${SUPABASE_URL}/project/default/editor`;
+  document.getElementById('btnSupabase').href  = `${SUPABASE_URL}/project/default/editor`;
 
-const DEMO_DOCS = [
-  { doc_id:'D001', title:'หนังสือรายงานการปลูกป่า ปี 2568', type:'รายงาน', file_url:'#', created_date:'2568-04-01', created_by:'U003', urgency:'ด่วน', signers:['U002','U004'], status:'pending', note:'' },
-  { doc_id:'D002', title:'คำสั่งแต่งตั้งคณะกรรมการตรวจรับ', type:'คำสั่ง', file_url:'#', created_date:'2568-04-05', created_by:'U001', urgency:'ปกติ', signers:['U002'], status:'signed', note:'' },
-  { doc_id:'D003', title:'บันทึกข้อความขอใช้งบประมาณ Q2', type:'บันทึกข้อความ', file_url:'#', created_date:'2568-04-10', created_by:'U003', urgency:'ปกติ', signers:['U004','U002'], status:'pending', note:'' },
-  { doc_id:'D004', title:'ประกาศห้ามเข้าป่าหวงห้ามเขต 3', type:'ประกาศ', file_url:'#', created_date:'2568-04-12', created_by:'U001', urgency:'ด่วนที่สุด', signers:['U002'], status:'rejected', note:'ข้อมูลไม่ครบถ้วน' },
-  { doc_id:'D005', title:'สัญญาซื้อขายต้นไม้โครงการ 2568', type:'สัญญา', file_url:'#', created_date:'2568-04-15', created_by:'U003', urgency:'ปกติ', signers:['U002','U004'], status:'signed', note:'' },
-];
+  // ── Helper: API headers ──
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
 
-const DEMO_SIGS = [
-  { sign_id:'S001', doc_id:'D002', user_id:'U002', signature_type:'draw', signature_data:'data:image/png;base64,iVBORw0KGgo=', sign_date:'2568-04-06 09:30', status:'signed' },
-  { sign_id:'S002', doc_id:'D004', user_id:'U002', signature_type:'type', signature_data:'วิชัย รักษ์ป่า', sign_date:'2568-04-13 14:20', status:'rejected' },
-  { sign_id:'S003', doc_id:'D005', user_id:'U002', signature_type:'draw', signature_data:'', sign_date:'2568-04-16 10:00', status:'signed' },
-  { sign_id:'S004', doc_id:'D005', user_id:'U004', signature_type:'type', signature_data:'ประเสริฐ รักษาการ', sign_date:'2568-04-16 14:30', status:'signed' },
-];
+  // ── Check login ──
+  if (!sessionStorage.getItem('loggedIn')) window.location.href = 'index.html';
+  document.getElementById('sidebarUser').textContent = sessionStorage.getItem('userName') || 'เจ้าหน้าที่';
 
-// ═══════════════════════════════════════════════════════════════════════
-// APP STATE
-// ═══════════════════════════════════════════════════════════════════════
-let state = {
-  currentUser: null,
-  users: [...DEMO_USERS],
-  documents: [...DEMO_DOCS],
-  signatures: [...DEMO_SIGS],
-  currentDocId: null,
-  sigColor: '#1a4731',
-  sigMode: 'draw',
-  uploadedFile: null,
-  sigUploadData: null,
-  tables: {},
-  signerList: [],
-};
-
-let sigCanvas, sigCtx, isDrawing = false, lastX = 0, lastY = 0;
-let sigHistory = [];
-
-// ═══════════════════════════════════════════════════════════════════════
-// LOGIN
-// ═══════════════════════════════════════════════════════════════════════
-function fillDemo(u, p) {
-  document.getElementById('loginUser').value = u;
-  document.getElementById('loginPass').value = p;
-}
-
-function doLogin() {
-  const u = document.getElementById('loginUser').value.trim();
-  const p = document.getElementById('loginPass').value.trim();
-  if (!u || !p) { showToast('กรุณากรอกข้อมูลให้ครบ', 'warning'); return; }
-  const user = state.users.find(x => x.username === u && x.password === p);
-  if (!user) {
-    Swal.fire({ icon:'error', title:'เข้าสู่ระบบไม่สำเร็จ', text:'Username หรือ Password ไม่ถูกต้อง', confirmButtonColor:'var(--forest-main)' });
-    return;
+  // ── Date / Time ──
+  function thDate(d) {
+    if (!d) return '';
+    const dt = typeof d === 'string' ? new Date(d) : d;
+    return dt.toLocaleDateString('th-TH', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
   }
-  state.currentUser = user;
-  initApp();
-}
 
-function doLogout() {
-  Swal.fire({
-    title:'ออกจากระบบ?', text:'คุณต้องการออกจากระบบใช่ไหม?',
-    icon:'question', showCancelButton:true,
-    confirmButtonColor:'var(--red)', cancelButtonColor:'var(--forest-main)',
-    confirmButtonText:'ออกจากระบบ', cancelButtonText:'ยกเลิก'
-  }).then(r => {
-    if (r.isConfirmed) {
-      state.currentUser = null;
-      document.getElementById('mainApp').style.display = 'none';
-      document.getElementById('loginPage').style.display = 'flex';
-      document.getElementById('loginUser').value = '';
-      document.getElementById('loginPass').value = '';
+  function setDateTime() {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm   = String(now.getMonth()+1).padStart(2,'0');
+    const dd   = String(now.getDate()).padStart(2,'0');
+    const hh   = String(now.getHours()).padStart(2,'0');
+    const mi   = String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('f_date').value = `${yyyy}-${mm}-${dd}`;
+    document.getElementById('f_time').value = `${hh}:${mi}`;
+    document.getElementById('currentDate').textContent = thDate(now);
+  }
+  setDateTime();
+
+  // ── Navigation ──
+  const titles = { dashboard:'แดชบอร์ด — ระบบลงรับหนังสือราชการ', register:'บันทึกลงรับหนังสือ', list:'รายการหนังสือทั้งหมด' };
+
+  function showSection(sec) {
+    ['dashboard','register','list'].forEach(s => {
+      document.getElementById('sec-'+s).style.display = (s===sec) ? '' : 'none';
+    });
+    document.querySelectorAll('.nav-item').forEach((el,i) => el.classList.remove('active'));
+    document.getElementById('pageTitle').textContent = titles[sec] || '';
+
+    if (sec==='dashboard') { loadStats(); loadRecentTable(); document.querySelectorAll('.nav-item')[0].classList.add('active'); }
+    if (sec==='register')  { loadNextRunning(); document.querySelectorAll('.nav-item')[1].classList.add('active'); }
+    if (sec==='list')      { loadAllTable(); document.querySelectorAll('.nav-item')[2].classList.add('active'); }
+  }
+
+  // ── Speed selection ──
+  let selectedSpeed = 'ปกติ';
+  function selectSpeed(btn) {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedSpeed = btn.dataset.val;
+  }
+
+  // ── Dept combo ──
+  function deptChange() {
+    const sel = document.getElementById('f_dept_select').value;
+    const inp = document.getElementById('f_dept_custom');
+    if (sel === '__custom__') {
+      inp.style.display = 'block';
+      inp.focus();
+    } else {
+      inp.style.display = 'none';
+      inp.value = '';
     }
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// APP INIT
-// ═══════════════════════════════════════════════════════════════════════
-function initApp() {
-  document.getElementById('loginPage').style.display = 'none';
-  document.getElementById('mainApp').style.display = 'flex';
-
-  const u = state.currentUser;
-  document.getElementById('sidebarName').textContent = u.name;
-  document.getElementById('sidebarRole').textContent = u.role === 'admin' ? 'Admin' : u.role === 'signer' ? 'ผู้เซ็น' : 'ผู้ดู';
-  document.getElementById('sidebarAvatar').textContent = u.name[2] || u.name[0];
-
-  if (u.role !== 'admin') {
-    document.getElementById('navUsers').style.display = 'none';
   }
 
-  updateBadges();
-  renderDashboard();
-  renderSignerSelect();
-  initSigCanvas();
-  updateDateTime();
-  setInterval(updateDateTime, 1000);
-  showPage('dashboard');
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════════════════════
-const PAGE_TITLES = {
-  dashboard: ['Dashboard', 'ภาพรวมระบบเซ็นเอกสารออนไลน์'],
-  documents: ['เอกสารทั้งหมด', 'รายการเอกสารในระบบ'],
-  pending: ['เอกสารรอเซ็น', 'เอกสารที่รอลายเซ็นของคุณ'],
-  signed: ['เซ็นแล้ว', 'ประวัติการเซ็นเอกสาร'],
-  upload: ['อัปโหลดเอกสาร', 'เพิ่มเอกสารใหม่เข้าสู่ระบบ'],
-  users: ['จัดการผู้ใช้', 'จัดการบัญชีผู้ใช้งาน'],
-  reports: ['รายงาน', 'สรุปสถิติและรายงาน'],
-};
-
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  const nav = document.querySelector(`.nav-item[onclick="showPage('${page}')"]`);
-  if (nav) nav.classList.add('active');
-  const [title, sub] = PAGE_TITLES[page] || [page, ''];
-  document.getElementById('pageTitle').textContent = title;
-  document.getElementById('pageSubtitle').textContent = sub;
-
-  const renders = {
-    dashboard: renderDashboard,
-    documents: renderDocTable,
-    pending: renderPending,
-    signed: renderSigned,
-    users: renderUsers,
-    reports: renderReports,
-  };
-  if (renders[page]) setTimeout(renders[page], 50);
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// DASHBOARD
-// ═══════════════════════════════════════════════════════════════════════
-function renderDashboard() {
-  const docs = state.documents;
-  const total = docs.length;
-  const pending = docs.filter(d => d.status === 'pending').length;
-  const signed = docs.filter(d => d.status === 'signed').length;
-  const rejected = docs.filter(d => d.status === 'rejected').length;
-
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statPending').textContent = pending;
-  document.getElementById('statSigned').textContent = signed;
-  document.getElementById('statRejected').textContent = rejected;
-
-  const myPending = getMyPendingDocs();
-  if (myPending.length > 0) {
-    document.getElementById('pendingAlert').style.display = 'flex';
-    document.getElementById('alertCount').textContent = myPending.length;
+  function toChange() {
+    const sel = document.getElementById('f_to_select').value;
+    const inp = document.getElementById('f_to_custom');
+    inp.style.display = sel === '__custom__' ? '' : 'none';
+    if (sel !== '__custom__') inp.value = '';
   }
 
-  updateBadges();
-  renderRecentDocs();
-  renderCharts();
-}
-
-function updateBadges() {
-  const pending = getMyPendingDocs().length;
-  document.getElementById('pendingBadge').textContent = pending;
-  document.getElementById('docBadge').textContent = state.documents.length;
-}
-
-function getMyPendingDocs() {
-  if (!state.currentUser) return [];
-  return state.documents.filter(d =>
-    d.status === 'pending' && d.signers.includes(state.currentUser.user_id)
-  );
-}
-
-function renderRecentDocs() {
-  const tbody = document.getElementById('recentDocsTbody');
-  if (!tbody) return;
-
-  // destroy old if exists
-  if ($.fn.DataTable.isDataTable('#recentDocsTable')) {
-    $('#recentDocsTable').DataTable().destroy();
+  function getDept() {
+    const sel = document.getElementById('f_dept_select').value;
+    if (sel === '__custom__') return document.getElementById('f_dept_custom').value.trim();
+    return sel;
   }
 
-  const recent = [...state.documents].sort((a,b) => b.doc_id.localeCompare(a.doc_id)).slice(0,5);
-  tbody.innerHTML = recent.map(d => {
-    const creator = getUserById(d.created_by);
-    return `<tr>
-      <td><code style="background:var(--forest-fog);padding:2px 8px;border-radius:6px;font-size:12px">${d.doc_id}</code></td>
-      <td><strong>${d.title}</strong><br><small style="color:var(--gray-500)">${d.type}</small></td>
-      <td>${creator?.name || '-'}</td>
-      <td>${d.created_date}</td>
-      <td>${statusBadge(d.status)}</td>
-      <td>
-        <button class="btn btn-secondary btn-sm" onclick="openDetail('${d.doc_id}')"><i class="fa fa-eye"></i></button>
-        <button class="btn btn-primary btn-sm" onclick="openSignForDoc('${d.doc_id}')"><i class="fa fa-pen"></i></button>
-      </td>
-    </tr>`;
-  }).join('');
-
-  $('#recentDocsTable').DataTable({ language: dtThai(), pageLength:5, dom:'frtip', order:[[0,'desc']] });
-}
-
-function renderCharts() {
-  const docs = state.documents;
-  const pending = docs.filter(d=>d.status==='pending').length;
-  const signed = docs.filter(d=>d.status==='signed').length;
-  const rejected = docs.filter(d=>d.status==='rejected').length;
-
-  const c1 = document.getElementById('chartStatus');
-  if (c1) {
-    if (c1._chartInst) c1._chartInst.destroy();
-    c1._chartInst = new Chart(c1, {
-      type: 'doughnut',
-      data: {
-        labels: ['รอเซ็น','เซ็นแล้ว','ปฏิเสธ'],
-        datasets: [{ data:[pending,signed,rejected],
-          backgroundColor:['#f59e0b','#40916c','#ef4444'],
-          borderWidth:0, hoverOffset:8 }]
-      },
-      options: { responsive:true, maintainAspectRatio:false,
-        plugins: { legend:{ position:'bottom', labels:{ font:{family:'Sarabun'}, boxWidth:12 } } }
-      }
-    });
+  function getTo() {
+    const sel = document.getElementById('f_to_select').value;
+    if (sel === '__custom__') return document.getElementById('f_to_custom').value.trim();
+    return sel;
   }
 
-  const c2 = document.getElementById('chartMonthly');
-  if (c2) {
-    if (c2._chartInst) c2._chartInst.destroy();
-    c2._chartInst = new Chart(c2, {
-      type: 'bar',
-      data: {
-        labels:['พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.'],
-        datasets: [
-          { label:'สร้างใหม่', data:[8,12,10,15,11,docs.length], backgroundColor:'rgba(64,145,108,0.7)', borderRadius:6 },
-          { label:'เซ็นแล้ว', data:[6,10,8,13,9,signed], backgroundColor:'rgba(201,168,76,0.7)', borderRadius:6 }
-        ]
-      },
-      options: { responsive:true, maintainAspectRatio:false,
-        plugins: { legend:{ labels:{ font:{family:'Sarabun'} } } },
-        scales: { y:{ beginAtZero:true, ticks:{ font:{family:'Sarabun'} } }, x:{ ticks:{ font:{family:'Sarabun'} } } }
-      }
-    });
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// DOCUMENTS TABLE
-// ═══════════════════════════════════════════════════════════════════════
-function renderDocTable() {
-  if ($.fn.DataTable.isDataTable('#docsTable')) $('#docsTable').DataTable().destroy();
-  const tbody = document.getElementById('docsTbody');
-  tbody.innerHTML = state.documents.map(d => {
-    const creator = getUserById(d.created_by);
-    const sigTotal = d.signers.length;
-    const sigDone = state.signatures.filter(s => s.doc_id === d.doc_id && s.status === 'signed').length;
-    const pct = sigTotal > 0 ? Math.round(sigDone/sigTotal*100) : 0;
-    return `<tr>
-      <td><code style="background:var(--forest-fog);padding:2px 8px;border-radius:6px;font-size:12px">${d.doc_id}</code></td>
-      <td>
-        <strong>${d.title}</strong>
-        ${d.urgency !== 'ปกติ' ? `<span style="background:#fee2e2;color:var(--red);font-size:10px;padding:1px 7px;border-radius:10px;margin-left:6px">${d.urgency}</span>` : ''}
-      </td>
-      <td>${d.type}</td>
-      <td>${creator?.name||'-'}</td>
-      <td>${d.created_date}</td>
-      <td>${statusBadge(d.status)}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:${pct}%"></div></div>
-          <span style="font-size:11px;color:var(--gray-500);white-space:nowrap">${sigDone}/${sigTotal}</span>
-        </div>
-      </td>
-      <td>
-        <div style="display:flex;gap:4px">
-          <button class="btn btn-secondary btn-sm btn-icon" onclick="openDetail('${d.doc_id}')" title="ดูรายละเอียด"><i class="fa fa-eye"></i></button>
-          <button class="btn btn-primary btn-sm btn-icon" onclick="openSignForDoc('${d.doc_id}')" title="เซ็น"><i class="fa fa-pen"></i></button>
-          <button class="btn btn-secondary btn-sm btn-icon" onclick="exportDocPDFById('${d.doc_id}')" title="PDF"><i class="fa fa-file-pdf"></i></button>
-        </div>
-      </td>
-    </tr>`;
-  }).join('');
-  $('#docsTable').DataTable({ language:dtThai(), pageLength:10, order:[[0,'desc']] });
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// PENDING
-// ═══════════════════════════════════════════════════════════════════════
-function renderPending() {
-  const myDocs = getMyPendingDocs();
-  const el = document.getElementById('pendingList');
-  if (myDocs.length === 0) {
-    el.innerHTML = `<div class="empty-state"><i class="fa fa-check-circle"></i><h3>ไม่มีเอกสารรอเซ็น</h3><p>คุณได้เซ็นเอกสารทั้งหมดเรียบร้อยแล้ว</p></div>`;
-    return;
-  }
-  el.innerHTML = myDocs.map(d => {
-    const creator = getUserById(d.created_by);
-    const urgColor = d.urgency==='ด่วนที่สุด'?'var(--red)':d.urgency==='ด่วน'?'var(--amber)':'var(--forest-main)';
-    return `
-    <div style="border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;background:white;border-left:4px solid ${urgColor};transition:var(--transition)"
-      onmouseover="this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.boxShadow='none'">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-            <code style="background:var(--forest-fog);padding:2px 8px;border-radius:6px;font-size:12px">${d.doc_id}</code>
-            ${statusBadge(d.status)}
-            <span style="background:${urgColor}20;color:${urgColor};font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700">${d.urgency}</span>
-          </div>
-          <div style="font-size:16px;font-weight:700;color:var(--forest-dark);margin-bottom:4px">${d.title}</div>
-          <div style="font-size:13px;color:var(--gray-500)">
-            <i class="fa fa-user" style="color:var(--forest-main)"></i> สร้างโดย: ${creator?.name||'-'} &nbsp;|&nbsp;
-            <i class="fa fa-calendar" style="color:var(--forest-main)"></i> ${d.created_date} &nbsp;|&nbsp;
-            <i class="fa fa-tag" style="color:var(--forest-main)"></i> ${d.type}
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;flex-shrink:0">
-          <button class="btn btn-secondary btn-sm" onclick="openDetail('${d.doc_id}')">
-            <i class="fa fa-eye"></i> ดู
-          </button>
-          <button class="btn btn-primary" onclick="openSignForDoc('${d.doc_id}')">
-            <i class="fa fa-signature"></i> เซ็นเอกสาร
-          </button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// SIGNED
-// ═══════════════════════════════════════════════════════════════════════
-function renderSigned() {
-  if ($.fn.DataTable.isDataTable('#signedTable')) $('#signedTable').DataTable().destroy();
-  const myId = state.currentUser.user_id;
-  const mySigs = state.signatures.filter(s => s.user_id === myId && s.status === 'signed');
-  const tbody = document.getElementById('signedTbody');
-  tbody.innerHTML = mySigs.map(s => {
-    const doc = state.documents.find(d => d.doc_id === s.doc_id);
-    const creator = doc ? getUserById(doc.created_by) : null;
-    const typeIcon = {draw:'✍️',type:'⌨️',upload:'📷'}[s.signature_type]||'✍️';
-    return `<tr>
-      <td><code style="background:var(--forest-fog);padding:2px 8px;border-radius:6px;font-size:12px">${s.doc_id}</code></td>
-      <td><strong>${doc?.title||'-'}</strong></td>
-      <td>${creator?.name||'-'}</td>
-      <td>${s.sign_date}</td>
-      <td><span style="background:var(--forest-snow);padding:3px 10px;border-radius:20px;font-size:12px">${typeIcon} ${{draw:'วาดลายเซ็น',type:'พิมพ์ชื่อ',upload:'อัปโหลด'}[s.signature_type]||'-'}</span></td>
-      <td>
-        <button class="btn btn-secondary btn-sm" onclick="openDetail('${s.doc_id}')"><i class="fa fa-eye"></i> ดู</button>
-        <button class="btn btn-secondary btn-sm" onclick="exportDocPDFById('${s.doc_id}')"><i class="fa fa-file-pdf"></i> PDF</button>
-      </td>
-    </tr>`;
-  }).join('') || `<tr><td colspan="6"><div class="empty-state" style="padding:30px 0"><i class="fa fa-file-signature"></i><h3>ยังไม่มีเอกสารที่เซ็น</h3></div></td></tr>`;
-  $('#signedTable').DataTable({ language:dtThai(), pageLength:10 });
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// USERS
-// ═══════════════════════════════════════════════════════════════════════
-function renderUsers() {
-  if ($.fn.DataTable.isDataTable('#usersTable')) $('#usersTable').DataTable().destroy();
-  const tbody = document.getElementById('usersTbody');
-  tbody.innerHTML = state.users.map(u => `<tr>
-    <td><code style="background:var(--forest-fog);padding:2px 8px;border-radius:6px;font-size:12px">${u.user_id}</code></td>
-    <td><strong>${u.name}</strong></td>
-    <td>${u.username}</td>
-    <td>${u.position||'-'}</td>
-    <td><span style="background:var(--forest-snow);color:var(--forest-dark);padding:3px 10px;border-radius:20px;font-size:12px">${u.role}</span></td>
-    <td><span class="status-badge ${u.active?'badge-signed':'badge-rejected'}">${u.active?'ใช้งาน':'ระงับ'}</span></td>
-    <td>
-      <button class="btn btn-secondary btn-sm btn-icon" onclick="toggleUser('${u.user_id}')">
-        <i class="fa fa-${u.active?'ban':'check'}"></i>
-      </button>
-      <button class="btn btn-danger btn-sm btn-icon" onclick="deleteUser('${u.user_id}')">
-        <i class="fa fa-trash"></i>
-      </button>
-    </td>
-  </tr>`).join('');
-  $('#usersTable').DataTable({ language:dtThai(), pageLength:10 });
-}
-
-function openAddUser() { openModal('userModal'); }
-
-function addUser() {
-  const name = document.getElementById('newUserName').value.trim();
-  const username = document.getElementById('newUsername').value.trim();
-  const password = document.getElementById('newPassword').value.trim();
-  const position = document.getElementById('newPosition').value.trim();
-  const role = document.getElementById('newRole').value;
-  const email = document.getElementById('newEmail').value.trim();
-  if (!name || !username || !password) { showToast('กรุณากรอกข้อมูลที่จำเป็น', 'warning'); return; }
-  if (state.users.find(u => u.username === username)) { showToast('Username นี้มีอยู่แล้ว', 'error'); return; }
-  const uid = 'U' + String(state.users.length + 1).padStart(3, '0');
-  state.users.push({ user_id:uid, name, role, username, password, position, email, active:true });
-  closeModal('userModal');
-  renderUsers();
-  renderSignerSelect();
-  showToast('เพิ่มผู้ใช้สำเร็จ', 'success');
-  callAPI('addUser', { user_id:uid, name, role, username, password, position, email });
-}
-
-function toggleUser(uid) {
-  const u = state.users.find(x => x.user_id === uid);
-  if (u) { u.active = !u.active; renderUsers(); }
-}
-
-function deleteUser(uid) {
-  Swal.fire({ title:'ลบผู้ใช้?', text:'การลบไม่สามารถย้อนกลับได้', icon:'warning',
-    showCancelButton:true, confirmButtonColor:'var(--red)', confirmButtonText:'ลบ', cancelButtonText:'ยกเลิก'
-  }).then(r => { if (r.isConfirmed) { state.users = state.users.filter(u => u.user_id !== uid); renderUsers(); showToast('ลบผู้ใช้แล้ว','success'); }});
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// REPORTS
-// ═══════════════════════════════════════════════════════════════════════
-function renderReports() {
-  const docs = state.documents;
-  const sigs = state.signatures;
-  const signed = docs.filter(d=>d.status==='signed').length;
-  const total = docs.length;
-  document.getElementById('repRate').textContent = total > 0 ? Math.round(signed/total*100)+'%' : '0%';
-  document.getElementById('repAvgTime').textContent = '4.2';
-
-  const sigCounts = {};
-  sigs.forEach(s => { sigCounts[s.user_id] = (sigCounts[s.user_id]||0) + 1; });
-  const topSigner = Object.entries(sigCounts).sort((a,b)=>b[1]-a[1])[0];
-  if (topSigner) { const u = getUserById(topSigner[0]); document.getElementById('repMostSigner').textContent = u?.name?.split(' ')[0]||'-'; }
-
-  const c3 = document.getElementById('chartTrend');
-  if (c3 && !c3._chartInst) {
-    c3._chartInst = new Chart(c3, {
-      type:'line',
-      data:{
-        labels:['พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.'],
-        datasets:[{label:'เซ็นสำเร็จ',data:[5,9,7,12,8,signed],
-          borderColor:'var(--forest-main)',backgroundColor:'rgba(64,145,108,0.1)',
-          tension:0.4,fill:true,pointRadius:5,pointBackgroundColor:'var(--forest-main)'}]
-      },
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{labels:{font:{family:'Sarabun'}}}},
-        scales:{y:{beginAtZero:true,ticks:{font:{family:'Sarabun'}}},x:{ticks:{font:{family:'Sarabun'}}}}}
-    });
+  // ── Next running number ──
+  async function loadNextRunning() {
+    const year = new Date().getFullYear() + 543;
+    try {
+      const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
+      const d = await r.json();
+      const last = d && d.length ? d[0].running_number : 2550;
+      const next = last + 1;
+      document.getElementById('previewRunning').textContent = `สจป.4-${year}-${String(next).padStart(4,'0')}`;
+    } catch {
+      document.getElementById('previewRunning').textContent = 'ไม่สามารถเชื่อมต่อ Supabase ได้';
+    }
   }
 
-  const typeCounts = {};
-  docs.forEach(d => { typeCounts[d.type] = (typeCounts[d.type]||0) + 1; });
-  const c4 = document.getElementById('chartDocType');
-  if (c4 && !c4._chartInst) {
-    c4._chartInst = new Chart(c4, {
-      type:'bar',
-      data:{
-        labels: Object.keys(typeCounts),
-        datasets:[{label:'จำนวน', data:Object.values(typeCounts),
-          backgroundColor:['rgba(64,145,108,0.7)','rgba(201,168,76,0.7)','rgba(59,130,246,0.7)','rgba(239,68,68,0.7)','rgba(139,92,246,0.7)','rgba(245,158,11,0.7)'],
-          borderRadius:6}]
-      },
-      options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-        plugins:{legend:{display:false}},
-        scales:{x:{beginAtZero:true,ticks:{font:{family:'Sarabun'}}},y:{ticks:{font:{family:'Sarabun'}}}}}
-    });
-  }
-}
+  // ── Save document ──
+  async function saveDocument() {
+    const f_date     = document.getElementById('f_date').value;
+    const f_time     = document.getElementById('f_time').value;
+    const f_docno    = document.getElementById('f_docno').value.trim();
+    const f_subject  = document.getElementById('f_subject').value.trim();
+    const f_signer   = document.getElementById('f_signer').value.trim();
+    const f_receiver = document.getElementById('f_receiver').value.trim();
+    const f_remark   = document.getElementById('f_remark').value.trim();
+    const dept       = getDept();
+    const toField    = getTo();
 
-// ═══════════════════════════════════════════════════════════════════════
-// UPLOAD & DOCUMENT SUBMIT
-// ═══════════════════════════════════════════════════════════════════════
-function handleFileSelect(input) {
-  const file = input.files[0];
-  if (!file) return;
-  state.uploadedFile = file;
-  document.getElementById('filePreview').style.display = 'block';
-  document.getElementById('fileName').textContent = file.name;
-  document.getElementById('fileSize').textContent = (file.size/1024).toFixed(1) + ' KB';
-  document.getElementById('fileIcon').textContent = file.type === 'application/pdf' ? '📄' : '🖼️';
-  if (!document.getElementById('docTitle').value) {
-    document.getElementById('docTitle').value = file.name.replace(/\.[^.]+$/, '');
-  }
-  document.getElementById('dropZone').style.display = 'none';
-}
-
-function clearFile() {
-  state.uploadedFile = null;
-  document.getElementById('filePreview').style.display = 'none';
-  document.getElementById('dropZone').style.display = 'block';
-  document.getElementById('fileInput').value = '';
-}
-
-// Drag & drop
-const dz = document.getElementById('dropZone');
-if (dz) {
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
-  dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
-  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); const f = e.dataTransfer.files[0]; if (f) { const inp = document.getElementById('fileInput'); const dt = new DataTransfer(); dt.items.add(f); inp.files = dt.files; handleFileSelect(inp); } });
-}
-
-function renderSignerSelect() {
-  const sel = document.getElementById('signerSelect');
-  if (!sel) return;
-  sel.innerHTML = '<option value="">-- เลือกผู้เซ็น --</option>';
-  state.users.filter(u => u.role === 'signer' || u.role === 'admin').forEach(u => {
-    sel.innerHTML += `<option value="${u.user_id}">${u.name} (${u.position||u.role})</option>`;
-  });
-}
-
-function addSigner(uid) {
-  if (!uid) return;
-  if (state.signerList.includes(uid)) { showToast('ผู้ใช้นี้อยู่ในรายการแล้ว','warning'); return; }
-  state.signerList.push(uid);
-  renderSignerOrder();
-  document.getElementById('signerSelect').value = '';
-}
-
-function renderSignerOrder() {
-  const el = document.getElementById('signerOrder');
-  el.innerHTML = state.signerList.map((uid, i) => {
-    const u = getUserById(uid);
-    return `<div class="signer-item">
-      <div class="signer-num">${i+1}</div>
-      <div class="signer-info">
-        <div class="signer-name">${u?.name||uid}</div>
-        <div class="signer-role">${u?.position||u?.role||'-'}</div>
-      </div>
-      <button class="btn btn-secondary btn-sm btn-icon" onclick="removeSigner('${uid}')"><i class="fa fa-times"></i></button>
-      <i class="fa fa-grip-lines signer-drag"></i>
-    </div>`;
-  }).join('');
-}
-
-function removeSigner(uid) {
-  state.signerList = state.signerList.filter(x => x !== uid);
-  renderSignerOrder();
-}
-
-function submitDocument() {
-  const title = document.getElementById('docTitle').value.trim();
-  if (!title) { showToast('กรุณาระบุชื่อเอกสาร','warning'); return; }
-  if (state.signerList.length === 0) { showToast('กรุณาเลือกผู้เซ็นอย่างน้อย 1 คน','warning'); return; }
-
-  Swal.fire({
-    title:'ยืนยันส่งเอกสาร?', icon:'question',
-    text:`ส่งเอกสาร "${title}" ให้ผู้เซ็น ${state.signerList.length} คน`,
-    showCancelButton:true, confirmButtonColor:'var(--forest-main)',
-    confirmButtonText:'ส่งเลย', cancelButtonText:'ยกเลิก'
-  }).then(r => {
-    if (!r.isConfirmed) return;
-    const docId = 'D' + String(state.documents.length + 1).padStart(3, '0');
-    const newDoc = {
-      doc_id: docId,
-      title,
-      type: document.getElementById('docType').value,
-      urgency: document.getElementById('docUrgency').value,
-      file_url: state.uploadedFile ? URL.createObjectURL(state.uploadedFile) : '#',
-      created_date: new Date().toLocaleDateString('th-TH'),
-      created_by: state.currentUser.user_id,
-      signers: [...state.signerList],
-      status: 'pending',
-      note: document.getElementById('docNote').value,
-    };
-    state.documents.push(newDoc);
-    state.signerList = [];
-    clearFile();
-    document.getElementById('docTitle').value = '';
-    document.getElementById('docNote').value = '';
-    renderSignerOrder();
-    updateBadges();
-    callAPI('submitDocument', newDoc);
-    Swal.fire({ icon:'success', title:'ส่งเอกสารสำเร็จ!', text:`รหัสเอกสาร: ${docId}`, confirmButtonColor:'var(--forest-main)', timer:3000 });
-    showPage('documents');
-  });
-}
-
-function saveDraft() { showToast('บันทึกร่างแล้ว','success'); }
-
-// ═══════════════════════════════════════════════════════════════════════
-// SIGNATURE CANVAS
-// ═══════════════════════════════════════════════════════════════════════
-function initSigCanvas() {
-  sigCanvas = document.getElementById('sigCanvas');
-  if (!sigCanvas) return;
-  sigCtx = sigCanvas.getContext('2d');
-  resizeCanvas();
-
-  sigCanvas.addEventListener('mousedown', startDraw);
-  sigCanvas.addEventListener('mousemove', draw);
-  sigCanvas.addEventListener('mouseup', stopDraw);
-  sigCanvas.addEventListener('mouseleave', stopDraw);
-  sigCanvas.addEventListener('touchstart', e => { e.preventDefault(); const t = e.touches[0]; startDraw({clientX:t.clientX,clientY:t.clientY}); }, {passive:false});
-  sigCanvas.addEventListener('touchmove', e => { e.preventDefault(); const t = e.touches[0]; draw({clientX:t.clientX,clientY:t.clientY}); }, {passive:false});
-  sigCanvas.addEventListener('touchend', stopDraw);
-}
-
-function resizeCanvas() {
-  const rect = sigCanvas.parentElement.getBoundingClientRect();
-  sigCanvas.width = rect.width || 600;
-  sigCanvas.height = 200;
-}
-
-function startDraw(e) {
-  isDrawing = true;
-  const r = sigCanvas.getBoundingClientRect();
-  lastX = e.clientX - r.left;
-  lastY = e.clientY - r.top;
-  sigHistory.push(sigCtx.getImageData(0, 0, sigCanvas.width, sigCanvas.height));
-}
-
-function draw(e) {
-  if (!isDrawing) return;
-  const r = sigCanvas.getBoundingClientRect();
-  const x = e.clientX - r.left, y = e.clientY - r.top;
-  sigCtx.beginPath();
-  sigCtx.moveTo(lastX, lastY);
-  sigCtx.lineTo(x, y);
-  sigCtx.strokeStyle = state.sigColor;
-  sigCtx.lineWidth = 2.5;
-  sigCtx.lineCap = 'round';
-  sigCtx.lineJoin = 'round';
-  sigCtx.stroke();
-  lastX = x; lastY = y;
-}
-
-function stopDraw() { isDrawing = false; }
-function clearSig() { sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); sigHistory = []; }
-function undoSig() { if (sigHistory.length > 0) sigCtx.putImageData(sigHistory.pop(), 0, 0); }
-function setSigColor(c, el) {
-  state.sigColor = c;
-  document.querySelectorAll('.sig-color').forEach(x => x.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function switchSigTab(mode, btn) {
-  state.sigMode = mode;
-  document.querySelectorAll('.sig-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.sig-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('sig' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
-}
-
-function loadSigImage(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    state.sigUploadData = e.target.result;
-    document.getElementById('sigUploadPreview').style.display = 'block';
-    document.getElementById('sigUploadImg').src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function getSignatureData() {
-  if (state.sigMode === 'draw') {
-    const blank = document.createElement('canvas');
-    blank.width = sigCanvas.width; blank.height = sigCanvas.height;
-    if (sigCanvas.toDataURL() === blank.toDataURL()) return null;
-    return { type:'draw', data: sigCanvas.toDataURL() };
-  } else if (state.sigMode === 'type') {
-    const txt = document.getElementById('sigTypeInput').value.trim();
-    if (!txt) return null;
-    const c = document.createElement('canvas');
-    c.width = 400; c.height = 100;
-    const ctx = c.getContext('2d');
-    ctx.font = "bold 48px 'Dancing Script', cursive";
-    ctx.fillStyle = state.sigColor;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(txt, 200, 50);
-    return { type:'type', data: c.toDataURL() };
-  } else {
-    if (!state.sigUploadData) return null;
-    return { type:'upload', data: state.sigUploadData };
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// SIGN MODAL
-// ═══════════════════════════════════════════════════════════════════════
-function openSignModal() {
-  const myDocs = getMyPendingDocs();
-  if (myDocs.length === 0) { showToast('ไม่มีเอกสารรอเซ็น','info'); return; }
-  openSignForDoc(myDocs[0].doc_id);
-}
-
-function openSignForDoc(docId) {
-  const doc = state.documents.find(d => d.doc_id === docId);
-  if (!doc) return;
-  if (doc.status === 'signed') { showToast('เอกสารนี้เซ็นครบแล้ว','info'); return; }
-  if (doc.status === 'rejected') { showToast('เอกสารนี้ถูกปฏิเสธแล้ว','warning'); return; }
-  state.currentDocId = docId;
-  document.getElementById('signDocTitle').textContent = doc.title;
-  document.getElementById('signDocMeta').textContent = `ประเภท: ${doc.type} | สร้างโดย: ${getUserById(doc.created_by)?.name||'-'} | วันที่: ${doc.created_date}`;
-  clearSig();
-  openModal('signModal');
-}
-
-function openSignFromDetail() {
-  closeModal('detailModal');
-  openSignForDoc(state.currentDocId);
-}
-
-function confirmSign() {
-  const sigData = getSignatureData();
-  if (!sigData) { showToast('กรุณาเซ็นชื่อก่อน','warning'); return; }
-
-  Swal.fire({
-    title:'ยืนยันการเซ็น?', icon:'question',
-    html:'<div style="font-family:Sarabun">คุณต้องการเซ็นเอกสารนี้ใช่ไหม?<br><small style="color:#64748b">การเซ็นนี้มีผลทางกฎหมาย</small></div>',
-    showCancelButton:true, confirmButtonColor:'var(--forest-main)',
-    confirmButtonText:'ยืนยัน', cancelButtonText:'ยกเลิก'
-  }).then(r => {
-    if (!r.isConfirmed) return;
-    const now = new Date().toLocaleString('th-TH');
-    const signId = 'S' + String(state.signatures.length + 1).padStart(3, '0');
-    const sig = {
-      sign_id: signId,
-      doc_id: state.currentDocId,
-      user_id: state.currentUser.user_id,
-      signature_type: sigData.type,
-      signature_data: sigData.data,
-      sign_date: now,
-      status: 'signed',
-      note: document.getElementById('signNote').value,
-    };
-    state.signatures.push(sig);
-
-    // Update doc status
-    const doc = state.documents.find(d => d.doc_id === state.currentDocId);
-    if (doc) {
-      const signersDone = doc.signers.filter(uid =>
-        state.signatures.some(s => s.doc_id === doc.doc_id && s.user_id === uid && s.status === 'signed')
-      );
-      if (signersDone.length >= doc.signers.length) doc.status = 'signed';
+    if (!f_date||!f_time||!f_docno||!f_subject||!f_signer||!f_receiver||!dept||!toField) {
+      showToast('❌','กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+      return;
     }
 
-    closeModal('signModal');
-    updateBadges();
-    callAPI('saveSignature', sig);
-    Swal.fire({ icon:'success', title:'เซ็นสำเร็จ!', html:`<div style="font-family:Sarabun">บันทึกลายเซ็นเรียบร้อย<br><small>รหัส: ${signId} | ${now}</small></div>`, confirmButtonColor:'var(--forest-main)', timer:3000 });
-    showPage('signed');
-  });
-}
+    const year = new Date().getFullYear() + 543;
 
-function rejectDoc() {
-  Swal.fire({
-    title:'ปฏิเสธเอกสาร?', icon:'warning',
-    html:`<input id="rejectReason" class="swal2-input" placeholder="ระบุเหตุผล" style="font-family:Sarabun">`,
-    showCancelButton:true, confirmButtonColor:'var(--red)',
-    confirmButtonText:'ปฏิเสธ', cancelButtonText:'ยกเลิก'
-  }).then(r => {
-    if (!r.isConfirmed) return;
-    const reason = document.getElementById('rejectReason').value;
-    const doc = state.documents.find(d => d.doc_id === state.currentDocId);
-    if (doc) { doc.status = 'rejected'; doc.note = reason; }
-    const sig = {
-      sign_id: 'S' + String(state.signatures.length + 1).padStart(3, '0'),
-      doc_id: state.currentDocId,
-      user_id: state.currentUser.user_id,
-      signature_type: 'rejected',
-      signature_data: '',
-      sign_date: new Date().toLocaleString('th-TH'),
-      status: 'rejected',
-      note: reason,
+    // Get next running number
+    let nextNum = 2550;
+    try {
+      const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
+      const d = await r.json();
+      if (d && d.length) nextNum = d[0].running_number + 1;
+else nextNum = 2550;
+    } catch {}
+
+    const docId = `สจป.4-${year}-${String(nextNum).padStart(4,'0')}`;
+
+    const payload = {
+      running_number: nextNum,
+      doc_id:         docId,
+      received_date:  f_date,
+      received_time:  f_time,
+      original_docno: f_docno,
+      speed_level:    selectedSpeed,
+      subject:        f_subject,
+      signer:         f_signer,
+      department:     dept,
+      receiver_officer: f_receiver,
+      to_recipient:   toField,
+      remark:         f_remark,
+      created_at:     new Date().toISOString()
     };
-    state.signatures.push(sig);
-    closeModal('signModal');
-    updateBadges();
-    showToast('ปฏิเสธเอกสารแล้ว','error');
-    showPage('documents');
-  });
-}
 
-// ═══════════════════════════════════════════════════════════════════════
-// DOCUMENT DETAIL
-// ═══════════════════════════════════════════════════════════════════════
-function openDetail(docId) {
-  const doc = state.documents.find(d => d.doc_id === docId);
-  if (!doc) return;
-  state.currentDocId = docId;
+    try {
+      const r = await fetch(SUPABASE_TABLE_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
 
-  document.getElementById('detailDocTitle').textContent = doc.title;
-  document.getElementById('detailDocId').textContent = doc.doc_id;
-  document.getElementById('detailStatus').innerHTML = statusBadge(doc.status);
+      if (r.ok) {
+        document.getElementById('modalDocNum').textContent = docId;
+        document.getElementById('modalSub').textContent = `หนังสือ: ${f_subject.substring(0,40)}${f_subject.length>40?'...':''}`;
+        document.getElementById('successModal').classList.add('open');
+        clearForm();
+        loadStats();
+      } else {
+        const err = await r.json();
+        showToast('❌', 'บันทึกไม่สำเร็จ: ' + (err.message || 'กรุณาตรวจสอบการตั้งค่า Supabase'));
+      }
+    } catch (e) {
+      showToast('❌', 'ไม่สามารถเชื่อมต่อ Supabase ได้ — กรุณาตั้งค่า URL และ KEY');
+      console.error(e);
+    }
+  }
 
-  const sigsDone = state.signatures.filter(s => s.doc_id === docId && s.status === 'signed').length;
-  const total = doc.signers.length;
-  const pct = total > 0 ? Math.round(sigsDone/total*100) : 0;
-  document.getElementById('detailProgress').textContent = `${sigsDone}/${total}`;
-  document.getElementById('detailProgressBar').style.width = pct + '%';
+  function clearForm() {
+    document.getElementById('f_docno').value = '';
+    document.getElementById('f_subject').value = '';
+    document.getElementById('f_signer').value = '';
+    document.getElementById('f_receiver').value = '';
+    document.getElementById('f_remark').value = '';
+    document.getElementById('f_dept_select').value = '';
+    document.getElementById('f_dept_custom').value = '';
+    document.getElementById('f_dept_custom').style.display = 'none';
+    document.getElementById('f_to_select').value = 'ผู้อำนวยการสำนักจัดการทรัพยากรป่าไม้ที่ 4 ตาก';
+    document.getElementById('f_to_custom').value = '';
+    document.getElementById('f_to_custom').style.display = 'none';
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelector('.speed-normal').classList.add('selected');
+    selectedSpeed = 'ปกติ';
+    setDateTime();
+    loadNextRunning();
+  }
 
-  // Timeline
-  const tlEl = document.getElementById('detailTimeline');
-  const sigs = state.signatures.filter(s => s.doc_id === docId);
-  tlEl.innerHTML = `
-    <div class="timeline-item">
-      <div class="timeline-dot"><i class="fa fa-plus" style="font-size:7px"></i></div>
-      <div class="timeline-content">
-        <div class="timeline-header">
-          <span class="timeline-user">${getUserById(doc.created_by)?.name||'-'}</span>
-          <span class="timeline-date">${doc.created_date}</span>
-        </div>
-        <div class="timeline-action"><i class="fa fa-cloud-upload-alt"></i> อัปโหลดเอกสาร "${doc.title}"</div>
-      </div>
-    </div>` +
-    doc.signers.map(uid => {
-      const u = getUserById(uid);
-      const sig = sigs.find(s => s.user_id === uid);
-      const dotClass = sig ? (sig.status === 'rejected' ? 'rejected' : '') : 'pending';
-      const action = sig
-        ? (sig.status === 'rejected' ? `<i class="fa fa-times-circle" style="color:var(--red)"></i> ปฏิเสธ${sig.note?' — '+sig.note:''}`
-          : `<i class="fa fa-check-circle" style="color:var(--forest-main)"></i> เซ็นเอกสารแล้ว (${sig.signature_type})`)
-        : `<i class="fa fa-clock" style="color:var(--amber)"></i> รอเซ็น`;
-      return `<div class="timeline-item">
-        <div class="timeline-dot ${dotClass}"></div>
-        <div class="timeline-content">
-          <div class="timeline-header">
-            <span class="timeline-user">${u?.name||uid}</span>
-            <span class="timeline-date">${sig?.sign_date||'-'}</span>
-          </div>
-          <div class="timeline-action">${action}</div>
-          ${sig?.signature_data && sig.status==='signed' ? `<div class="timeline-sig-preview"><img src="${sig.signature_data}" alt="ลายเซ็น"></div>` : ''}
-        </div>
-      </div>`;
-    }).join('');
+  // ── Load stats ──
+  async function loadStats() {
+    try {
+      // Total
+      const rTotal = await fetch(`${SUPABASE_TABLE_URL}?select=id`, { headers: {...headers,'Prefer':'count=exact'} });
+      const total = parseInt(rTotal.headers.get('content-range')?.split('/')[1] || '0');
 
-  // QR Code
-  const qrEl = document.getElementById('qrCode');
-  qrEl.innerHTML = '';
-  new QRCode(qrEl, {
-    text: `${window.location.href}?doc=${docId}`,
-    width:120, height:120,
-    colorDark:'#1a4731', colorLight:'#ffffff',
-    correctLevel: QRCode.CorrectLevel.M
-  });
+      // Today
+      const today = new Date().toISOString().split('T')[0];
+      const rToday = await fetch(`${SUPABASE_TABLE_URL}?select=id&received_date=eq.${today}`, { headers: {...headers,'Prefer':'count=exact'} });
+      const todayCount = parseInt(rToday.headers.get('content-range')?.split('/')[1] || '0');
 
-  // Show sign button if user is pending signer
-  const canSign = doc.signers.includes(state.currentUser.user_id) && doc.status === 'pending' &&
-    !state.signatures.some(s => s.doc_id === docId && s.user_id === state.currentUser.user_id);
-  document.getElementById('detailSignBtn').style.display = canSign ? 'flex' : 'none';
+      // Urgent
+      const rUrgent = await fetch(`${SUPABASE_TABLE_URL}?select=id&speed_level=neq.ปกติ`, { headers: {...headers,'Prefer':'count=exact'} });
+      const urgentCount = parseInt(rUrgent.headers.get('content-range')?.split('/')[1] || '0');
 
-  openModal('detailModal');
-}
+      // Next running
+      const rNext = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
+      const dNext = await rNext.json();
+      const nextNum = (dNext && dNext.length ? dNext[0].running_number : 2549) + 1;
+      const year = new Date().getFullYear() + 543;
 
-// ═══════════════════════════════════════════════════════════════════════
-// EXPORT PDF
-// ═══════════════════════════════════════════════════════════════════════
-function exportDocPDF() { exportDocPDFById(state.currentDocId); }
+      document.getElementById('countToday').textContent  = todayCount;
+      document.getElementById('countTotal').textContent  = total;
+      document.getElementById('countUrgent').textContent = urgentCount;
+      document.getElementById('nextRunning').textContent = String(nextNum).padStart(4,'0');
+    } catch {}
+  }
 
-function exportDocPDFById(docId) {
-  const doc = state.documents.find(d => d.doc_id === docId);
-  if (!doc) return;
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-  pdf.setFont('helvetica');
-  pdf.setFillColor(26,71,49);
-  pdf.rect(0,0,210,30,'F');
-  pdf.setTextColor(255,255,255);
-  pdf.setFontSize(14); pdf.setFont('helvetica','bold');
-  pdf.text('Royal Forest Department - E-Sign System', 105, 12, {align:'center'});
-  pdf.setFontSize(10); pdf.setFont('helvetica','normal');
-  pdf.text('กรมป่าไม้ | ระบบเซ็นเอกสารออนไลน์', 105, 20, {align:'center'});
-  pdf.setTextColor(0,0,0);
-  pdf.setFontSize(16); pdf.setFont('helvetica','bold');
-  pdf.text(doc.title.substring(0,60), 15, 45);
-  pdf.setFontSize(10); pdf.setFont('helvetica','normal');
-  pdf.setTextColor(100,100,100);
-  pdf.text(`Document ID: ${doc.doc_id}  |  Type: ${doc.type}  |  Date: ${doc.created_date}`, 15, 53);
-  pdf.text(`Status: ${doc.status.toUpperCase()}  |  Creator: ${getUserById(doc.created_by)?.name||'-'}`, 15, 60);
-  pdf.setDrawColor(64,145,108); pdf.setLineWidth(0.5); pdf.line(15,65,195,65);
-  pdf.setTextColor(0,0,0); pdf.setFontSize(11); pdf.setFont('helvetica','bold');
-  pdf.text('Signature Records:', 15, 75);
-  let y = 83;
-  const sigs = state.signatures.filter(s => s.doc_id === docId);
-  if (sigs.length === 0) { pdf.setFont('helvetica','normal'); pdf.setFontSize(10); pdf.text('No signatures yet', 20, y); }
-  sigs.forEach((s,i) => {
-    const u = getUserById(s.user_id);
-    pdf.setFontSize(10); pdf.setFont('helvetica','bold');
-    pdf.text(`${i+1}. ${u?.name||s.user_id}`, 20, y);
-    pdf.setFont('helvetica','normal');
-    pdf.text(`   Status: ${s.status} | Type: ${s.signature_type} | Date: ${s.sign_date}`, 20, y+6);
-    if (s.signature_data && s.status === 'signed' && s.signature_type !== 'type') {
-      try { pdf.addImage(s.signature_data, 'PNG', 20, y+8, 60, 20); y += 32; } catch(e) { y += 16; }
-    } else if (s.signature_type === 'type' && s.signature_data) {
-      pdf.setFontSize(14); pdf.text(s.signature_data, 25, y+15);
-      y += 24;
-    } else { y += 16; }
-    pdf.setDrawColor(220,220,220); pdf.line(15,y,195,y); y += 6;
-  });
-  pdf.setFillColor(240,250,244); pdf.rect(0,267,210,30,'F');
-  pdf.setFontSize(8); pdf.setTextColor(100,100,100);
-  pdf.text(`Generated by RFD E-Sign System | ${new Date().toLocaleString('th-TH')}`, 105, 278, {align:'center'});
-  pdf.text(`Verify: ${window.location.href}?doc=${docId}`, 105, 285, {align:'center'});
-  pdf.save(`${doc.doc_id}_${doc.title.substring(0,20)}.pdf`);
-}
-
-function exportAllPDF() { showToast('กำลัง Export...','info'); state.documents.forEach(d => exportDocPDFById(d.doc_id)); }
-
-// ═══════════════════════════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════════════════════════
-function getUserById(uid) { return state.users.find(u => u.user_id === uid); }
-
-function statusBadge(s) {
-  const map = {
-    pending: ['badge-pending','รอเซ็น'],
-    signed: ['badge-signed','เซ็นแล้ว'],
-    rejected: ['badge-rejected','ปฏิเสธ'],
-    waiting: ['badge-waiting','รอดำเนินการ'],
+  // ── Badge helper ──
+  const speedBadge = {
+    'ปกติ':      'badge-normal',
+    'ด่วน':      'badge-duan',
+    'ด่วนมาก':   'badge-duan-mak',
+    'ด่วนที่สุด':'badge-duan-sud',
+    'ลับ':       'badge-lab',
+    'ลับมาก':    'badge-lab-mak',
+    'ลับที่สุด': 'badge-lab-sud',
   };
-  const [cls, label] = map[s] || ['badge-waiting', s];
-  return `<span class="status-badge ${cls}">${label}</span>`;
-}
 
-function updateDateTime() {
-  const el = document.getElementById('signDateTime');
-  if (el) el.textContent = new Date().toLocaleString('th-TH', { dateStyle:'full', timeStyle:'medium' });
-}
+  function speedBadgeHtml(speed) {
+    const cls = speedBadge[speed] || 'badge-normal';
+    return `<span class="badge ${cls}">${speed}</span>`;
+  }
 
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  // ── Load recent table ──
+  async function loadRecentTable() {
+    const tbody = document.getElementById('recentTable');
+    try {
+      const r = await fetch(`${SUPABASE_TABLE_URL}?select=*&order=running_number.desc&limit=10`, { headers });
+      const d = await r.json();
+      if (!d.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#aaa;padding:32px">ยังไม่มีข้อมูล</td></tr>'; return; }
+      tbody.innerHTML = d.map(row => `
+        <tr>
+          <td><span class="doc-num">${row.doc_id}</span></td>
+          <td>${row.received_date || ''}</td>
+          <td>${row.original_docno || ''}</td>
+          <td>${speedBadgeHtml(row.speed_level)}</td>
+          <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${row.subject || ''}</td>
+          <td>${row.department || ''}</td>
+          <td>${row.signer || ''}</td>
+        </tr>`).join('');
+    } catch {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#e57;padding:32px">ไม่สามารถเชื่อมต่อ Supabase ได้</td></tr>';
+    }
+  }
 
-// Close modal on overlay click
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
-});
+  let allData = [];
+  async function loadAllTable() {
+    const tbody = document.getElementById('allTable');
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#aaa;padding:32px">กำลังโหลด...</td></tr>';
+    try {
+      const r = await fetch(`${SUPABASE_TABLE_URL}?select=*&order=running_number.desc`, { headers });
+      allData = await r.json();
+      renderAllTable(allData);
+    } catch {
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#e57;padding:32px">ไม่สามารถเชื่อมต่อ Supabase ได้</td></tr>';
+    }
+  }
 
-function showToast(msg, type='info') {
-  const icons = { success:'success', error:'error', warning:'warning', info:'info' };
-  Swal.fire({ toast:true, position:'top-end', icon:icons[type]||'info', title:msg, showConfirmButton:false, timer:3000, timerProgressBar:true, customClass:{popup:'swal-toast'} });
-}
+  function renderAllTable(data) {
+    const tbody = document.getElementById('allTable');
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#aaa;padding:32px">ยังไม่มีข้อมูล</td></tr>'; return; }
+    tbody.innerHTML = data.map(row => `
+      <tr>
+        <td><span class="doc-num">${row.doc_id}</span></td>
+        <td>${row.received_date||''}</td>
+        <td>${row.received_time||''}</td>
+        <td>${row.original_docno||''}</td>
+        <td>${speedBadgeHtml(row.speed_level)}</td>
+        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${row.subject||''}</td>
+        <td>${row.department||''}</td>
+        <td>${row.signer||''}</td>
+        <td>${row.receiver_officer||''}</td>
+        <td style="max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${row.to_recipient||''}</td>
+      </tr>`).join('');
+  }
 
-function dtThai() {
-  return {
-    search:'ค้นหา:', lengthMenu:'แสดง _MENU_ รายการ', zeroRecords:'ไม่พบข้อมูล',
-    info:'แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ', infoEmpty:'ไม่มีข้อมูล',
-    infoFiltered:'(กรองจาก _MAX_ รายการ)', paginate:{first:'แรก',last:'สุดท้าย',next:'ถัดไป',previous:'ก่อนหน้า'}
-  };
-}
+  function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    if (!q) { renderAllTable(allData); return; }
+    renderAllTable(allData.filter(r =>
+      Object.values(r).some(v => v && String(v).toLowerCase().includes(q))
+    ));
+  }
 
-// ═══════════════════════════════════════════════════════════════════════
-// API CALL (Google Apps Script)
-// ═══════════════════════════════════════════════════════════════════════
-async function callAPI(action, data) {
-  if (!API_URL || API_URL === 'https://script.google.com/macros/s/AKfycbzL5DQhGwgBIWC6VBx2xmDpdHOYmKTIPyUVP8D0x5lZsn8KhZHzbqrZoaLYpoHcSQVvvg/exec') return;
-  try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, data })
-    });
-    return await res.json();
-  } catch(e) { console.error('API Error:', e); }
-}
+  function refreshTable() {
+    const sec = document.getElementById('sec-list').style.display !== 'none' ? 'list' : 'dashboard';
+    if (sec === 'list') loadAllTable();
+    else { loadStats(); loadRecentTable(); }
+  }
 
-async function loadFromAPI() {
-  if (!API_URL || API_URL === 'https://script.google.com/macros/s/AKfycbzL5DQhGwgBIWC6VBx2xmDpdHOYmKTIPyUVP8D0x5lZsn8KhZHzbqrZoaLYpoHcSQVvvg/exec') return;
-  try {
-    const res = await fetch(`${API_URL}?action=getData`);
-    const json = await res.json();
-    if (json.users) state.users = json.users;
-    if (json.documents) state.documents = json.documents;
-    if (json.signatures) state.signatures = json.signatures;
-  } catch(e) { console.error('Load API Error:', e); }
-}
+  // ── Modal ──
+  function closeModal() {
+    document.getElementById('successModal').classList.remove('open');
+    loadNextRunning();
+  }
 
-// Init
-document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('loginPass').focus(); });
-document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+  // ── Toast ──
+  function showToast(icon, msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMsg').textContent  = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── Logout ──
+  function doLogout() {
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  // ── Init ──
+  loadStats();
+  loadRecentTable();
 </script>
 </body>
 </html>
