@@ -592,6 +592,156 @@
       .form-group.span3 { grid-column: span 2; }
       .speed-grid { grid-template-columns: repeat(4,1fr); }
     }
+/* ─── ACTION BUTTONS IN TABLE ─── */
+.btn-edit {
+  padding: 5px 12px;
+  background: linear-gradient(135deg, #2471a3, #5dade2);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.btn-edit:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(36,113,163,0.4); }
+
+.btn-delete {
+  padding: 5px 12px;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.btn-delete:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(192,57,43,0.4); }
+
+/* ─── EDIT MODAL ─── */
+.edit-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(5px);
+  z-index: 300;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.edit-modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.edit-modal {
+  background: var(--white);
+  border-radius: 16px;
+  width: 90%; max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  transform: scale(0.92) translateY(20px);
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  border-top: 4px solid var(--forest-light);
+}
+
+.edit-modal-overlay.open .edit-modal { transform: scale(1) translateY(0); }
+
+.edit-modal-header {
+  background: linear-gradient(135deg, var(--forest-dark), var(--forest-mid));
+  padding: 20px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 2px solid var(--gold);
+}
+
+.edit-modal-header h3 {
+  font-family: 'Noto Serif Thai', serif;
+  font-size: 17px; font-weight: 700; color: var(--white);
+  display: flex; align-items: center; gap: 10px;
+}
+
+.edit-modal-close {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  color: white; font-size: 18px;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  transition: all 0.18s;
+}
+
+.edit-modal-close:hover { background: rgba(220,38,38,0.4); }
+
+.edit-modal-body { padding: 28px; }
+
+.edit-modal-footer {
+  padding: 16px 28px;
+  border-top: 1px solid var(--border);
+  background: var(--forest-bg);
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+
+/* ─── CONFIRM DELETE MODAL ─── */
+.confirm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(5px);
+  z-index: 400;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.confirm-overlay.open { opacity: 1; pointer-events: all; }
+
+.confirm-box {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 36px 32px;
+  max-width: 400px; width: 90%;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+  border-top: 4px solid var(--danger);
+  transform: scale(0.9) translateY(16px);
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.confirm-overlay.open .confirm-box { transform: scale(1) translateY(0); }
+
+.confirm-icon { font-size: 52px; margin-bottom: 14px; }
+
+.confirm-title {
+  font-family: 'Noto Serif Thai', serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--danger); margin-bottom: 10px;
+}
+
+.confirm-msg { font-size: 14px; color: var(--text-mid); margin-bottom: 8px; line-height: 1.7; }
+
+.confirm-doc {
+  font-family: 'Courier New', monospace;
+  font-size: 15px; font-weight: 700;
+  color: var(--danger);
+  background: #fef2f2;
+  border: 1.5px dashed #fca5a5;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin: 14px 0 24px;
+  display: inline-block;
+}
+
+.confirm-btns { display: flex; gap: 10px; }
+.confirm-btns .btn { flex: 1; justify-content: center; }
+
+.btn-danger {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: white;
+  box-shadow: 0 4px 12px rgba(192,57,43,0.35);
+}
+
+.btn-danger:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(192,57,43,0.45); }
   </style>
 </head>
 <body>
@@ -843,6 +993,7 @@
                 <th>เลขรับ</th><th>วันที่ลงรับ</th><th>เวลา</th><th>เลขที่หนังสือ</th>
                 <th>ชั้นความเร็ว</th><th>หัวข้อเรื่อง</th><th>หน่วยงาน</th>
                 <th>ผู้ลงนาม</th><th>เจ้าหน้าที่รับ</th><th>ถึง</th>
+		<th style="text-align:center">จัดการ</th>
               </tr>
             </thead>
             <tbody id="allTable">
@@ -1106,22 +1257,39 @@
   }
 
   function renderAllTable(data) {
-    const tbody = document.getElementById('allTable');
-    if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#aaa;padding:36px">ยังไม่มีข้อมูล</td></tr>'; return; }
-    tbody.innerHTML = data.map(row => `
-      <tr>
-        <td><span class="doc-num">${row.doc_id}</span></td>
-        <td>${row.received_date||''}</td>
-        <td>${row.received_time||''}</td>
-        <td>${row.original_docno||''}</td>
-        <td>${speedBadgeHtml(row.speed_level)}</td>
-        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${row.subject||''}</td>
-        <td>${row.department||''}</td>
-        <td>${row.signer||''}</td>
-        <td>${row.receiver_officer||''}</td>
-        <td style="max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${row.to_recipient||''}</td>
-      </tr>`).join('');
+  const tbody = document.getElementById('allTable');
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#aaa;padding:36px">ยังไม่มีข้อมูล</td></tr>';
+    return;
   }
+  tbody.innerHTML = data.map(row => `
+    <tr>
+      <td><span class="doc-num">${row.doc_id}</span></td>
+      <td>${row.received_date || ''}</td>
+      <td>${row.received_time || ''}</td>
+      <td>${row.original_docno || ''}</td>
+      <td>${speedBadgeHtml(row.speed_level)}</td>
+      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+          title="${row.subject || ''}">${row.subject || ''}</td>
+      <td>${row.department || ''}</td>
+      <td>${row.signer || ''}</td>
+      <td>${row.receiver_officer || ''}</td>
+      <td style="max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+          title="${row.to_recipient || ''}">${row.to_recipient || ''}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn-edit"
+            onclick='openEditModal(${JSON.stringify(row)})'>
+            ✏️ แก้ไข
+          </button>
+          <button class="btn-delete"
+            onclick='openConfirmDelete(${row.id},"${row.doc_id}")'>
+            🗑️ ลบ
+          </button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
 
   function filterTable() {
     const q = document.getElementById('searchInput').value.toLowerCase();
@@ -1155,7 +1323,240 @@
 
   loadStats();
   loadRecentTable();
+// ══════════════════════════════════════════
+//  ✏️ EDIT / 🗑️ DELETE SYSTEM
+// ══════════════════════════════════════════
+
+let editSelectedSpeed = 'ปกติ';
+let deleteTargetId    = null;   // supabase row id
+let deleteTargetDocId = null;  // doc_id สำหรับแสดง
+
+// ── เปิด Edit Modal ──
+function openEditModal(row) {
+  // ใส่ค่าลงฟอร์ม
+  document.getElementById('edit_id').value              = row.id;
+  document.getElementById('edit_doc_id').value          = row.doc_id;
+  document.getElementById('edit_running_number').value  = row.running_number;
+  document.getElementById('edit_doc_id_display').textContent = row.doc_id;
+  document.getElementById('edit_date').value            = row.received_date || '';
+  document.getElementById('edit_time').value            = row.received_time || '';
+  document.getElementById('edit_docno').value           = row.original_docno || '';
+  document.getElementById('edit_subject').value         = row.subject || '';
+  document.getElementById('edit_signer').value          = row.signer || '';
+  document.getElementById('edit_department').value      = row.department || '';
+  document.getElementById('edit_receiver').value        = row.receiver_officer || '';
+  document.getElementById('edit_to').value              = row.to_recipient || '';
+  document.getElementById('edit_remark').value          = row.remark || '';
+
+  // set speed buttons
+  editSelectedSpeed = row.speed_level || 'ปกติ';
+  document.querySelectorAll('.edit-speed-btn').forEach(b => {
+    b.classList.remove('selected');
+    if (b.dataset.val === editSelectedSpeed) b.classList.add('selected');
+  });
+
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+}
+
+function selectEditSpeed(btn) {
+  document.querySelectorAll('.edit-speed-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  editSelectedSpeed = btn.dataset.val;
+}
+
+// ── บันทึกการแก้ไข ──
+async function updateDocument() {
+  const id       = document.getElementById('edit_id').value;
+  const date     = document.getElementById('edit_date').value;
+  const time     = document.getElementById('edit_time').value;
+  const docno    = document.getElementById('edit_docno').value.trim();
+  const subject  = document.getElementById('edit_subject').value.trim();
+  const signer   = document.getElementById('edit_signer').value.trim();
+  const dept     = document.getElementById('edit_department').value.trim();
+  const receiver = document.getElementById('edit_receiver').value.trim();
+  const to       = document.getElementById('edit_to').value.trim();
+  const remark   = document.getElementById('edit_remark').value.trim();
+
+  if (!date||!time||!docno||!subject||!signer||!dept||!receiver||!to) {
+    showToast('❌','กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+    return;
+  }
+
+  const payload = {
+    received_date:    date,
+    received_time:    time,
+    original_docno:   docno,
+    speed_level:      editSelectedSpeed,
+    subject:          subject,
+    signer:           signer,
+    department:       dept,
+    receiver_officer: receiver,
+    to_recipient:     to,
+    remark:           remark,
+    updated_at:       new Date().toISOString()
+  };
+
+  try {
+    const r = await fetch(`${SUPABASE_TABLE_URL}?id=eq.${id}`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (r.ok) {
+      closeEditModal();
+      showToast('✅', 'แก้ไขข้อมูลสำเร็จ');
+      // รีโหลดตาราง
+      const secList = document.getElementById('sec-list').style.display !== 'none';
+      if (secList) loadAllTable();
+      else { loadStats(); loadRecentTable(); }
+    } else {
+      const err = await r.json();
+      showToast('❌', 'แก้ไขไม่สำเร็จ: ' + (err.message || 'ตรวจสอบ Supabase'));
+    }
+  } catch(e) {
+    showToast('❌', 'ไม่สามารถเชื่อมต่อ Supabase ได้');
+    console.error(e);
+  }
+}
+
+// ── เปิด Confirm Delete ──
+function openConfirmDelete(id, docId) {
+  deleteTargetId    = id;
+  deleteTargetDocId = docId;
+  document.getElementById('confirmDocId').textContent = docId;
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.remove('open');
+  deleteTargetId    = null;
+  deleteTargetDocId = null;
+}
+
+// ── ลบจริง ──
+async function confirmDelete() {
+  if (!deleteTargetId) return;
+
+  try {
+    const r = await fetch(`${SUPABASE_TABLE_URL}?id=eq.${deleteTargetId}`, {
+      method: 'DELETE',
+      headers
+    });
+
+    if (r.ok || r.status === 204) {
+      closeConfirm();
+      showToast('🗑️', `ลบ ${deleteTargetDocId} สำเร็จ`);
+      const secList = document.getElementById('sec-list').style.display !== 'none';
+      if (secList) loadAllTable();
+      else { loadStats(); loadRecentTable(); }
+    } else {
+      showToast('❌', 'ลบไม่สำเร็จ กรุณาลองใหม่');
+    }
+  } catch(e) {
+    showToast('❌', 'ไม่สามารถเชื่อมต่อ Supabase ได้');
+    console.error(e);
+  }
+}
 </script>
+<!-- ════ EDIT MODAL ════ -->
+<div class="edit-modal-overlay" id="editModal">
+  <div class="edit-modal">
+    <div class="edit-modal-header">
+      <h3>✏️ แก้ไขข้อมูลหนังสือ</h3>
+      <button class="edit-modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="edit-modal-body">
+
+      <!-- แสดงเลขรับ -->
+      <div style="background:var(--forest-pale);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:13px;color:var(--text-mid);">เลขรับ:</span>
+        <span class="doc-num" id="edit_doc_id_display">—</span>
+        <input type="hidden" id="edit_id" />
+        <input type="hidden" id="edit_doc_id" />
+        <input type="hidden" id="edit_running_number" />
+      </div>
+
+      <div class="form-grid three">
+
+        <div class="form-group">
+          <label class="form-label">หนังสือลงวันที่ <span class="req">*</span></label>
+          <input type="date" id="edit_date" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">เวลาที่รับ <span class="req">*</span></label>
+          <input type="time" id="edit_time" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">เลขที่หนังสือต้นทาง <span class="req">*</span></label>
+          <input type="text" id="edit_docno" class="form-input" placeholder="เช่น ทส 1617.01/" />
+        </div>
+
+        <div class="form-group span3">
+          <label class="form-label">ชั้นความเร็ว / ชั้นความลับ <span class="req">*</span></label>
+          <div class="speed-grid">
+            <button type="button" class="speed-btn speed-normal edit-speed-btn" data-val="ปกติ" onclick="selectEditSpeed(this)">ปกติ</button>
+            <button type="button" class="speed-btn speed-duan edit-speed-btn" data-val="ด่วน" onclick="selectEditSpeed(this)">ด่วน</button>
+            <button type="button" class="speed-btn speed-duan-mak edit-speed-btn" data-val="ด่วนมาก" onclick="selectEditSpeed(this)">ด่วนมาก</button>
+            <button type="button" class="speed-btn speed-duan-sud edit-speed-btn" data-val="ด่วนที่สุด" onclick="selectEditSpeed(this)">ด่วนที่สุด</button>
+            <button type="button" class="speed-btn speed-lab edit-speed-btn" data-val="ลับ" onclick="selectEditSpeed(this)">ลับ</button>
+            <button type="button" class="speed-btn speed-lab-mak edit-speed-btn" data-val="ลับมาก" onclick="selectEditSpeed(this)">ลับมาก</button>
+            <button type="button" class="speed-btn speed-lab-sud edit-speed-btn" data-val="ลับที่สุด" onclick="selectEditSpeed(this)">ลับที่สุด</button>
+          </div>
+        </div>
+
+        <div class="form-group span3">
+          <label class="form-label">หัวข้อเรื่อง <span class="req">*</span></label>
+          <textarea id="edit_subject" class="form-textarea" rows="2"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ผู้ลงนาม <span class="req">*</span></label>
+          <input type="text" id="edit_signer" class="form-input" />
+        </div>
+        <div class="form-group span2">
+          <label class="form-label">หน่วยงานเจ้าของเรื่อง <span class="req">*</span></label>
+          <input type="text" id="edit_department" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">เจ้าหน้าที่ผู้รับเรื่อง <span class="req">*</span></label>
+          <input type="text" id="edit_receiver" class="form-input" />
+        </div>
+        <div class="form-group span2">
+          <label class="form-label">ถึง (ผู้รับหนังสือ) <span class="req">*</span></label>
+          <input type="text" id="edit_to" class="form-input" />
+        </div>
+        <div class="form-group span3">
+          <label class="form-label">หมายเหตุ</label>
+          <input type="text" id="edit_remark" class="form-input" />
+        </div>
+
+      </div>
+    </div>
+    <div class="edit-modal-footer">
+      <button class="btn btn-secondary" onclick="closeEditModal()">❌ ยกเลิก</button>
+      <button class="btn btn-primary" onclick="updateDocument()">💾 บันทึกการแก้ไข</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CONFIRM DELETE MODAL ════ -->
+<div class="confirm-overlay" id="confirmModal">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">ยืนยันการลบ?</div>
+    <div class="confirm-msg">คุณกำลังจะลบหนังสือฉบับนี้ออกจากระบบ<br>การดำเนินการนี้ไม่สามารถย้อนกลับได้</div>
+    <div class="confirm-doc" id="confirmDocId">สจป.4-xxxx-xxxx</div>
+    <div class="confirm-btns">
+      <button class="btn btn-secondary" onclick="closeConfirm()">⬅️ ยกเลิก</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">🗑️ ลบเลย</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
 
