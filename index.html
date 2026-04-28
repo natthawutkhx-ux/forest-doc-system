@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -36,7 +37,6 @@
       overflow: hidden;
     }
 
-    /* Animated forest background */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -48,7 +48,6 @@
       z-index: 0;
     }
 
-    /* Tree silhouette SVG pattern */
     body::after {
       content: '';
       position: fixed; bottom: 0; left: 0; right: 0;
@@ -92,14 +91,12 @@
       gap: 16px; margin-bottom: 16px;
     }
 
-    .emblem-icon {
-      width: 64px; height: 64px;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    .emblem-logo {
+      width: 72px; height: 72px;
       border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 30px;
-      box-shadow: 0 4px 16px rgba(201,168,76,0.4);
+      object-fit: cover;
       flex-shrink: 0;
+      filter: drop-shadow(0 4px 12px rgba(201,168,76,0.5));
     }
 
     .org-text { text-align: left; }
@@ -131,7 +128,7 @@
       margin-top: 4px;
     }
 
-    .login-body { padding: 32px 40px 36px; }
+    .login-body { padding: 32px 40px 28px; }
 
     .form-group { margin-bottom: 20px; }
 
@@ -213,27 +210,14 @@
 
     .login-footer {
       text-align: center;
-      padding: 0 40px 28px;
+      padding: 16px 40px 28px;
       font-size: 11px;
       color: var(--text-light);
       line-height: 1.8;
+      border-top: 1px solid var(--border);
     }
 
     .login-footer strong { color: var(--text-mid); }
-
-    /* Demo credentials hint */
-    .demo-hint {
-      background: var(--forest-pale);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: var(--text-mid);
-      margin-bottom: 20px;
-      line-height: 1.8;
-    }
-
-    .demo-hint strong { color: var(--forest-dark); }
   </style>
 </head>
 <body>
@@ -241,7 +225,11 @@
     <div class="login-card">
       <div class="login-header">
         <div class="emblem-wrapper">
-          <div class="emblem-icon">🌲</div>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/1/1c/Emblem_of_the_Royal_Forest_Department_%28Thailand%29%2C_2023.png"
+            alt="โลโก้กรมป่าไม้"
+            class="emblem-logo"
+          />
           <div class="org-text">
             <div class="org-title">กรมป่าไม้ กระทรวงทรัพยากรธรรมชาติและสิ่งแวดล้อม</div>
             <div class="org-sub">Royal Forest Department · Ministry of Natural Resources and Environment</div>
@@ -252,11 +240,6 @@
       </div>
 
       <div class="login-body">
-        <div class="demo-hint">
-          <strong>ข้อมูลสำหรับทดสอบ:</strong><br>
-          ชื่อผู้ใช้: <strong>admin</strong> &nbsp;|&nbsp; รหัสผ่าน: <strong>forest2567</strong>
-        </div>
-
         <div class="form-group">
           <label class="form-label">ชื่อผู้ใช้งาน</label>
           <div class="input-icon-wrap">
@@ -286,14 +269,22 @@
   </div>
 
   <script>
+    // ═══ รายชื่อผู้ใช้งาน — เพิ่ม/แก้ไขได้ที่นี่ ═══
+    const USERS = [
+      { username: 'admin',  password: 'admin',  displayName: 'ผู้ดูแลระบบ' },
+      { username: 'Panida', password: '1234',   displayName: 'พนิดา' },
+    ];
+
     function doLogin() {
       const u = document.getElementById('username').value.trim();
       const p = document.getElementById('password').value.trim();
       const err = document.getElementById('errorMsg');
-      if (u === 'admin' && p === 'admin') {
+
+      const found = USERS.find(x => x.username === u && x.password === p);
+      if (found) {
         err.style.display = 'none';
         sessionStorage.setItem('loggedIn', '1');
-        sessionStorage.setItem('userName', 'ผู้ดูแลระบบ');
+        sessionStorage.setItem('userName', found.displayName);
         window.location.href = 'dashboard.html';
       } else {
         err.style.display = 'block';
