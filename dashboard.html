@@ -1114,10 +1114,16 @@
     try {
       const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
       const d = await r.json();
-      const last = d && d.length ? d[0].running_number : 2550;
+      const last = d && d.length ? d[0].running_number : 2809;
       const next = last + 1;
       document.getElementById('previewRunning').textContent = `สจป.4-${year}-${String(next).padStart(4,'0')}`;
-    } catch {
+    } catch {o').value.trim();
+    const f_subject  = document.getElementById('f_subject').value.trim();
+    const f_signer   = document.getElementById('f_signer').value.trim();
+    const f_receiver = document.getElementById('f_receiver').value.trim();
+    const f_remark   = document.getElementById('f_remark').value.trim();
+    const dept       = getDept();
+    const toField    = getTo();
       document.getElementById('previewRunning').textContent = 'ไม่สามารถเชื่อมต่อ Supabase ได้';
     }
   }
@@ -1125,25 +1131,19 @@
   async function saveDocument() {
     const f_date     = document.getElementById('f_date').value;
     const f_time     = document.getElementById('f_time').value;
-    const f_docno    = document.getElementById('f_docno').value.trim();
-    const f_subject  = document.getElementById('f_subject').value.trim();
-    const f_signer   = document.getElementById('f_signer').value.trim();
-    const f_receiver = document.getElementById('f_receiver').value.trim();
-    const f_remark   = document.getElementById('f_remark').value.trim();
-    const dept       = getDept();
-    const toField    = getTo();
+    const f_docno    = document.getElementById('f_docn
 
     if (!f_date||!f_time||!f_docno||!f_subject||!f_signer||!f_receiver||!dept||!toField) {
       showToast('❌','กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน'); return;
     }
 
     const year = new Date().getFullYear() + 543;
-    let nextNum = 2550;
+    let nextNum = 2809;
     try {
       const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
       const d = await r.json();
       if (d && d.length) nextNum = d[0].running_number + 1;
-      else nextNum = 2550;
+      else nextNum = 2809;
     } catch {}
 
     const docId = `สจป.4-${year}-${String(nextNum).padStart(4,'0')}`;
