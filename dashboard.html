@@ -742,6 +742,110 @@
 }
 
 .btn-danger:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(192,57,43,0.45); }
+/* ─── STAMP POPUP ─── */
+.stamp-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+  z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s;
+}
+
+.stamp-overlay.open { opacity: 1; pointer-events: all; }
+
+.stamp-box {
+  position: relative;
+  background: var(--cream);
+  border-radius: 12px;
+  padding: 40px 48px 32px;
+  text-align: center;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.3);
+  transform: scale(0.7) rotate(-8deg);
+  transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  max-width: 380px; width: 90%;
+  border: 2px solid var(--gold);
+}
+
+.stamp-overlay.open .stamp-box {
+  transform: scale(1) rotate(0deg);
+}
+
+/* เส้นประขอบ stamp */
+.stamp-box::before {
+  content: '';
+  position: absolute; inset: 6px;
+  border: 2px dashed rgba(201,168,76,0.5);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.stamp-ribbon {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--forest-mid), var(--forest-dark));
+  color: var(--gold-light);
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 20px; border-radius: 20px;
+  border: 1.5px solid var(--gold);
+  white-space: nowrap;
+}
+
+.stamp-check {
+  font-size: 52px; margin-bottom: 8px;
+  animation: popIn 0.4s 0.2s both;
+}
+
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.stamp-title {
+  font-family: 'Noto Serif Thai', serif;
+  font-size: 14px; color: var(--text-light);
+  margin-bottom: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+.stamp-num {
+  font-family: 'Courier New', monospace;
+  font-size: 32px; font-weight: 900;
+  color: var(--forest-dark);
+  background: linear-gradient(135deg, var(--forest-dark), var(--forest-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+.stamp-subject {
+  font-size: 12.5px; color: var(--text-light);
+  margin-bottom: 24px; line-height: 1.6;
+  max-width: 280px; margin-left: auto; margin-right: auto;
+}
+
+.stamp-close {
+  background: linear-gradient(135deg, var(--forest-mid), var(--forest-dark));
+  color: var(--white);
+  border: none; border-radius: 8px;
+  padding: 11px 36px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 0 4px 14px rgba(26,46,26,0.35);
+}
+
+.stamp-close:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,46,26,0.45); }
+
+.stamp-date {
+  font-size: 11px; color: var(--text-light);
+  margin-top: 16px; letter-spacing: 0.5px;
+}
   </style>
 </head>
 <body>
@@ -1008,16 +1112,18 @@
 </main>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="successModal">
-  <div class="modal">
-    <div class="modal-icon">✅</div>
-    <div class="modal-title">บันทึกสำเร็จ!</div>
-    <div class="modal-doc-num" id="modalDocNum">สจป.4/2548</div>
-    <div class="modal-sub" id="modalSub">เลขรับหนังสือที่ออกให้</div>
-    <button class="btn btn-primary modal-close" style="width:100%;justify-content:center" onclick="closeModal()">ตกลง</button>
+<!-- STAMP POPUP -->
+<div class="stamp-overlay" id="successModal">
+  <div class="stamp-box">
+    <div class="stamp-ribbon">✅ บันทึกสำเร็จ</div>
+    <div class="stamp-check">📋</div>
+    <div class="stamp-title">เลขรับหนังสือ</div>
+    <div class="stamp-num" id="modalDocNum">สจป.4/2568</div>
+    <div class="stamp-subject" id="modalSub">—</div>
+    <button class="stamp-close" onclick="closeModal()">ตกลง</button>
+    <div class="stamp-date" id="stampDate">—</div>
   </div>
 </div>
-
 <!-- TOAST -->
 <div class="toast" id="toast">
   <span id="toastIcon">✅</span>
@@ -1162,7 +1268,9 @@
       if (r.ok) {
         document.getElementById('modalDocNum').textContent = docId;
         document.getElementById('modalSub').textContent = `หนังสือ: ${f_subject.substring(0,40)}${f_subject.length>40?'...':''}`;
-        document.getElementById('successModal').classList.add('open');
+        document.getElementById('successModal').classList.add('open');document.getElementById('stampDate').textContent = 
+  'วันที่บันทึก: ' + new Date().toLocaleDateString('th-TH', 
+  { year:'numeric', month:'long', day:'numeric' });
         clearForm(); loadStats();
       } else {
         const err = await r.json();
