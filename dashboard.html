@@ -1136,9 +1136,7 @@
   const TABLE_NAME    = 'documents';
   const SUPABASE_TABLE_URL = `${SUPABASE_URL}/rest/v1/${TABLE_NAME}`;
 
-  document.getElementById('supabaseLink').href = `${SUPABASE_URL}/project/default/editor`;
-  document.getElementById('btnSupabase').href  = `${SUPABASE_URL}/project/default/editor`;
-
+ 
   const headers = {
     'apikey': SUPABASE_KEY,
     'Authorization': `Bearer ${SUPABASE_KEY}`,
@@ -1668,4 +1666,4 @@ async function confirmDelete() {
 </html>
 
 
-done
+
