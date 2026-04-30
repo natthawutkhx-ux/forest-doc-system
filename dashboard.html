@@ -1074,9 +1074,7 @@
         </div>
         <div class="form-actions">
           <button class="btn btn-secondary" onclick="clearForm()">🗑️ ล้างข้อมูล</button>
-          <button id="btnSave" class="btn btn-primary" onclick="saveDocument()">
-  💾 บันทึกและออกเลขรับ
-</button>
+          <button class="btn btn-primary" onclick="saveDocument()">💾 บันทึกและออกเลขรับ</button>
         </div>
       </div>
     </div>
@@ -1228,85 +1226,58 @@
   }
 
   async function saveDocument() {
+    const f_date     = document.getElementById('f_date').value;
+    const f_time     = document.getElementById('f_time').value;
+    const f_docno    = document.getElementById('f_docno').value.trim();
+    const f_subject  = document.getElementById('f_subject').value.trim();
+    const f_signer   = document.getElementById('f_signer').value.trim();
+    const f_receiver = document.getElementById('f_receiver').value.trim();
+    const f_remark   = document.getElementById('f_remark').value.trim();
+    const dept       = getDept();
+    const toField    = getTo();
 
-  // ── Validate ──
-  const f_date     = document.getElementById('f_date').value;
-  const f_time     = document.getElementById('f_time').value;
-  const f_docno    = document.getElementById('f_docno').value.trim();
-  const f_subject  = document.getElementById('f_subject').value.trim();
-  const f_signer   = document.getElementById('f_signer').value.trim();
-  const f_receiver = document.getElementById('f_receiver').value.trim();
-  const f_remark   = document.getElementById('f_remark').value.trim();
-  const dept       = getDept();
-  const toField    = getTo();
-
-  if (!f_date||!f_time||!f_docno||!f_subject||
-      !f_signer||!f_receiver||!dept||!toField) {
-    showToast('❌', 'กรุณากรอกข้อมูลให้ครบถ้วน');
-    return;
-  }
-
-  // ── ป้องกันกดซ้ำ ──
-  const btn = document.getElementById('btnSave');
-  btn.disabled    = true;
-  btn.textContent = '⏳ กำลังบันทึก...';
-
-  try {
-    // ── เรียก Function ที่สร้างไว้ ──
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/rpc/save_document`,
-      {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          p_date:     f_date,
-          p_time:     f_time,
-          p_docno:    f_docno,
-          p_speed:    selectedSpeed,
-          p_subject:  f_subject,
-          p_signer:   f_signer,
-          p_dept:     dept,
-          p_receiver: f_receiver,
-          p_to:       toField,
-          p_remark:   f_remark
-        })
-      }
-    );
-
-    const result = await res.json();
-
-    if (result.success) {
-      // ── สำเร็จ → เปิด Popup ──
-      openSuccessModal({
-        doc_id:           result.doc_id,
-        received_date:    f_date,
-        received_time:    f_time,
-        original_docno:   f_docno,
-        speed_level:      selectedSpeed,
-        subject:          f_subject,
-        signer:           f_signer,
-        department:       dept,
-        to_recipient:     toField,
-        receiver_officer: f_receiver,
-        remark:           f_remark
-      });
-      clearForm();
-      loadStats();
-
-    } else {
-      showToast('❌', 'เกิดข้อผิดพลาด: ' + result.error);
+    if (!f_date||!f_time||!f_docno||!f_subject||!f_signer||!f_receiver||!dept||!toField) {
+      showToast('❌','กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน'); return;
     }
 
-  } catch (e) {
-    showToast('❌', 'ไม่สามารถเชื่อมต่อได้');
-    console.error(e);
+    const year = new Date().getFullYear() + 543;
+    let nextNum = 2809;
+    try {
+      const r = await fetch(`${SUPABASE_TABLE_URL}?select=running_number&order=running_number.desc&limit=1`, { headers });
+      const d = await r.json();
+      if (d && d.length) nextNum = d[0].running_number + 1;
+      else nextNum = 2809;
+    } catch {}
 
-  } finally {
-    // ── คืนปุ่มเสมอ ──
-    btn.disabled    = false;
-    btn.textContent = '💾 บันทึกและออกเลขรับ';
+    const docId = `สจป.4-${year}-${String(nextNum).padStart(4,'0')}`;
+    const payload = {
+      running_number: nextNum, doc_id: docId,
+      received_date: f_date, received_time: f_time,
+      original_docno: f_docno, speed_level: selectedSpeed,
+      subject: f_subject, signer: f_signer,
+      department: dept, receiver_officer: f_receiver,
+      to_recipient: toField, remark: f_remark,
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      const r = await fetch(SUPABASE_TABLE_URL, { method:'POST', headers, body: JSON.stringify(payload) });
+      if (r.ok) {
+        document.getElementById('modalDocNum').textContent = docId;
+        document.getElementById('modalSub').textContent = `หนังสือ: ${f_subject.substring(0,40)}${f_subject.length>40?'...':''}`;
+        document.getElementById('successModal').classList.add('open');document.getElementById('stampDate').textContent = 
+  'วันที่บันทึก: ' + new Date().toLocaleDateString('th-TH', 
+  { year:'numeric', month:'long', day:'numeric' });
+        clearForm(); loadStats();
+      } else {
+        const err = await r.json();
+        showToast('❌','บันทึกไม่สำเร็จ: '+(err.message||'กรุณาตรวจสอบการตั้งค่า Supabase'));
+      }
+    } catch(e) {
+      showToast('❌','ไม่สามารถเชื่อมต่อ Supabase ได้ — กรุณาตั้งค่า URL และ KEY');
+      console.error(e);
+    }
   }
-}
 
   function clearForm() {
     document.getElementById('f_docno').value = '';
@@ -1693,6 +1664,3 @@ async function confirmDelete() {
 </div>
 </body>
 </html>
-
-
-
